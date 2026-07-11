@@ -87,6 +87,40 @@ export default function HomePage() {
                 </NextLink>
               </Reveal>
 
+              <Reveal delay={0.21} className="mt-7 w-full max-w-lg">
+                <div className="relative isolate flex min-h-60 items-end overflow-hidden rounded-[1.4rem] border border-white/30 px-5 py-5 text-left shadow-[0_18px_45px_-22px_rgba(9,18,38,0.65)] sm:px-6">
+                  <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+                    <Image
+                      src="/trump-ansem-hero.png"
+                      alt=""
+                      fill
+                      priority
+                      sizes="(max-width: 640px) calc(100vw - 3.5rem), 512px"
+                      className="object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#07101f]/95 via-[#07101f]/45 to-transparent" />
+                  </div>
+
+                  <div className="max-w-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/65">
+                      Character matchups
+                    </p>
+                    <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-white sm:text-2xl">
+                      Donald Trump × Ansem
+                    </h2>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-white/80">
+                      Pick the question. Put two voices in the room.
+                    </p>
+                    <NextLink
+                      href="/create"
+                      className="mt-4 inline-flex min-h-10 items-center rounded-full bg-white px-4 text-sm font-semibold text-[#0a0a0b] transition-[transform,background-color] duration-150 ease-out hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101f] active:scale-[0.98]"
+                    >
+                      Build this match
+                    </NextLink>
+                  </div>
+                </div>
+              </Reveal>
+
               <Reveal delay={0.24} className="mt-8 flex flex-wrap items-center justify-center gap-2">
                 {trustBadges.map((b) => (
                   <span
