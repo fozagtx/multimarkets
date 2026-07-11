@@ -14,6 +14,7 @@ import { WalletConnectHeader } from "@/components/wallet-connect";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   return (
     <div
@@ -21,9 +22,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       style={{ colorScheme: "light" }}
       data-theme="light"
     >
-      {/* Desktop sidebar — always expanded */}
-      <div className="sticky top-0 hidden h-dvh w-72 shrink-0 sm:block">
-        <AppSidebar isCompact={false} />
+      {/* Desktop sidebar — compact toggle stays inside the sidebar, never in page chrome */}
+      <div
+        className={`sticky top-0 hidden h-dvh shrink-0 transition-[width] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] sm:block ${
+          isCollapsed ? "w-[83px]" : "w-72"
+        }`}
+      >
+        <AppSidebar
+          isCompact={isCollapsed}
+          onToggle={() => setIsCollapsed((previous) => !previous)}
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

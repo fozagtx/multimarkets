@@ -4,6 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 
 import AppShell from "@/components/app-shell";
+import WalletAccessGate from "@/components/wallet-access-gate";
 
 /**
  * Landing (/) = marketing only.
@@ -16,5 +17,9 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
     return <main className="min-h-dvh">{children}</main>;
   }
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <WalletAccessGate>
+      <AppShell>{children}</AppShell>
+    </WalletAccessGate>
+  );
 }

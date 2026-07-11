@@ -17,6 +17,7 @@ import { WalletConnectHeader } from "@/components/wallet-connect";
 
 export type AppSidebarProps = {
   isCompact?: boolean;
+  onToggle?: () => void;
   onNavigate?: () => void;
   isMobileDrawer?: boolean;
   className?: string;
@@ -24,6 +25,7 @@ export type AppSidebarProps = {
 
 export default function AppSidebar({
   isCompact = false,
+  onToggle,
   onNavigate,
   isMobileDrawer = false,
   className,
@@ -58,7 +60,7 @@ export default function AppSidebar({
         className,
       )}
     >
-      {/* Brand row — collapse (expanded) or expand (compact) always next to logo */}
+      {/* Brand row */}
       <div
         className={cn("flex w-full items-center gap-2 pl-1", {
           "flex-col gap-3 pl-0": isCompact,
@@ -102,6 +104,25 @@ export default function AppSidebar({
             />
           </button>
         )}
+
+        {!isMobileDrawer && onToggle && (
+          <button
+            type="button"
+            aria-label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-default-500 transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-default-100 hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2"
+            onClick={onToggle}
+          >
+            <Icon
+              className="[&>g]:stroke-[1px]"
+              icon={
+                isCompact
+                  ? "solar:round-alt-arrow-right-line-duotone"
+                  : "solar:round-alt-arrow-left-line-duotone"
+              }
+              width={24}
+            />
+          </button>
+        )}
       </div>
 
       <Spacer y={isCompact ? 4 : 6} />
@@ -116,8 +137,8 @@ export default function AppSidebar({
           items={appSidebarItems}
           iconClassName="group-data-[selected=true]:text-default-50"
           itemClasses={{
-            base: "px-3 rounded-large data-[selected=true]:!bg-foreground",
-            title: "group-data-[selected=true]:text-default-50",
+            base: "px-3 rounded-large data-[selected=true]:!bg-foreground data-[selected=true]:!text-white",
+            title: "group-data-[selected=true]:!text-white",
           }}
           onSelect={(key) => {
             const href = hrefByKey[key];
