@@ -1,0 +1,47 @@
+{
+  "network": "hashkeyTestnet",
+  "chainId": 133,
+  "deployer": "0xDe5df44009FD2E13bBAcfED2b8e3833B5Dc4Bf21",
+  "timestamp": "2026-07-11T00:11:39.831Z",
+  "testnetOnly": true,
+  "faucet": {
+    "hsk": "https://faucet.hsk.xyz/faucet",
+    "rpc": "https://testnet.hsk.xyz",
+    "chainId": 133,
+    "note": "HSK for gas. tUSDT mint() for trade collateral on testnet deploys."
+  },
+  "outcomeCodes": {
+    "YES": 0,
+    "NO": 1,
+    "cancelSettlement": "use ChatRoom.cancelSettlement() for UNCLEAR/INVALID"
+  },
+  "contracts": {
+    "AgentRegistry": "0xA0fEF298aA72AebB5f537BF09221F0F2843c0c06",
+    "MasterAgentGuard": "0x32A69a587488EB9664A7F7E6f6a6a2B33657446A",
+    "CoinbaseOracleAdapter": "0x7d6803Ab43E41963f871cBffFf3F0995d36E0048",
+    "ChatRoomFactory": "0xdE7B54ef04Bf5939505A933EBE59390504d73f75",
+    "TestnetUSDT": "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
+    "CollateralToken": "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
+    "DemoChatRoom": "0xD2e29385C759DE71C4D64Aa8835B80D034AF4d93",
+    "DemoPredictionMarket": "0xAEA92ba5649f1A017f1a90ABd98715CEf3F5748D",
+    "DemoRoomId": 1
+  },
+  "config": {
+    "coinbaseOracleSigner": "0xDe5df44009FD2E13bBAcfED2b8e3833B5Dc4Bf21",
+    "defaultSettlementAuthority": "0xDe5df44009FD2E13bBAcfED2b8e3833B5Dc4Bf21"
+  },
+  "webEnv": {
+    "NEXT_PUBLIC_HASHKEY_TESTNET_RPC": "https://testnet.hsk.xyz",
+    "NEXT_PUBLIC_CHAT_ROOM_FACTORY_ADDRESS": "0xdE7B54ef04Bf5939505A933EBE59390504d73f75",
+    "NEXT_PUBLIC_AGENT_REGISTRY_ADDRESS": "0xA0fEF298aA72AebB5f537BF09221F0F2843c0c06",
+    "NEXT_PUBLIC_ORACLE_ADAPTER_ADDRESS": "0x7d6803Ab43E41963f871cBffFf3F0995d36E0048",
+    "NEXT_PUBLIC_MASTER_AGENT_GUARD_ADDRESS": "0x32A69a587488EB9664A7F7E6f6a6a2B33657446A",
+    "NEXT_PUBLIC_COLLATERAL_TOKEN_ADDRESS": "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
+    "NEXT_PUBLIC_PREDICTION_MARKET_ADDRESS": "0xAEA92ba5649f1A017f1a90ABd98715CEf3F5748D",
+    "NEXT_PUBLIC_DEMO_CHAT_ROOM_ADDRESS": "0xD2e29385C759DE71C4D64Aa8835B80D034AF4d93"
+  },
+  "references": {
+    "explorer": "https://testnet-explorer.hsk.xyz",
+    "rpc": "https://testnet.hsk.xyz"
+  }
+}

@@ -1,0 +1,520 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+
+  /* Soft Structuralism + brand */
+  --mm-primary: #5b7cfa;
+  --mm-secondary: #7c6cf5;
+  --mm-accent: #00c2a8;
+  --mm-ink: #0a0a0b;
+  --mm-ink-2: #1c1c1f;
+  --mm-ink-3: #3f3f46;
+  --mm-muted: #71717a;
+  --mm-surface: #f4f4f5;
+  --mm-card: #ffffff;
+  --mm-hairline: rgba(10, 10, 11, 0.06);
+  --mm-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --mm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --mm-shadow-ambient: 0 24px 80px -24px rgba(20, 20, 43, 0.18);
+  --mm-shadow-soft: 0 12px 40px -16px rgba(20, 20, 43, 0.12);
+  --mm-shadow-lift: 0 32px 64px -20px rgba(20, 20, 43, 0.2);
+
+  --mm-page-x: 1rem;
+  --mm-page-y: 2rem;
+  --mm-stack: 1.5rem;
+  --mm-header: 1.5rem;
+  --mm-section: 6rem;
+  --mm-gap-lg: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --mm-page-x: 1.5rem;
+    --mm-section: 8rem;
+  }
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  @apply antialiased;
+  background: #eef1f8;
+  color: #0a0a0b;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: rgba(91, 124, 250, 0.22);
+  color: #0a0a0b;
+}
+
+/*
+ * Soft Structuralism is light-only.
+ * Kill white-on-white when OS/dark class would set light foreground on white cards.
+ */
+.lp,
+.app-shell {
+  color-scheme: light !important;
+  color: #0a0a0b !important;
+  /* HeroUI / NextUI semantic tokens → dark ink on light surfaces */
+  --heroui-foreground: 10 10 11;
+  --heroui-background: 238 241 248;
+  --heroui-content1: 255 255 255;
+  --heroui-content2: 244 244 245;
+  --heroui-default-foreground: 10 10 11;
+  --nextui-foreground: 10 10 11;
+  --nextui-background: 238 241 248;
+}
+
+/* Typography defaults — do NOT set color on a/span/div (breaks black CTAs) */
+.lp h1,
+.lp h2,
+.lp h3,
+.lp h4,
+.lp p,
+.lp li,
+.lp label,
+.app-shell h1,
+.app-shell h2,
+.app-shell h3,
+.app-shell h4,
+.app-shell p,
+.app-shell li,
+.app-shell label {
+  color: #0a0a0b;
+}
+
+/* Explicit utility overrides (Tailwind + HeroUI) — not on buttons */
+.lp .text-foreground:not(button):not(a.lp-btn):not([class*="bg-[#0a0a0b]"]),
+.lp .text-default-foreground:not(button):not(a.lp-btn),
+.lp .text-default-900,
+.app-shell .text-foreground:not(button):not(a.lp-btn):not([class*="bg-[#0a0a0b]"]),
+.app-shell .text-default-foreground:not(button):not(a.lp-btn),
+.app-shell .text-default-900 {
+  color: #0a0a0b !important;
+}
+.lp .text-default-400,
+.lp .text-default-500,
+.app-shell .text-default-400,
+.app-shell .text-default-500 {
+  color: #52525b !important;
+}
+.lp .text-default-600,
+.lp .text-default-700,
+.app-shell .text-default-600,
+.app-shell .text-default-700 {
+  color: #3f3f46 !important;
+}
+.lp .text-default-300,
+.app-shell .text-default-300 {
+  color: #71717a !important;
+}
+
+/* Status colors stay dark enough on white */
+.lp .text-success,
+.lp .text-success-600,
+.app-shell .text-success,
+.app-shell .text-success-600 {
+  color: #047857 !important;
+}
+.lp .text-primary,
+.lp .text-primary-600,
+.app-shell .text-primary,
+.app-shell .text-primary-600 {
+  color: #1d4ed8 !important;
+}
+.lp .text-warning,
+.lp .text-warning-600,
+.app-shell .text-warning,
+.app-shell .text-warning-600 {
+  color: #b45309 !important;
+}
+.lp .text-danger,
+.lp .text-danger-600,
+.app-shell .text-danger,
+.app-shell .text-danger-600 {
+  color: #b91c1c !important;
+}
+
+/*
+ * Button contrast contract:
+ * black fill → white label | white/light fill → black label
+ */
+.lp-btn-primary,
+.lp-btn-primary:hover,
+.lp-btn-primary:focus,
+.lp-btn-primary:active {
+  background: #0a0a0b !important;
+  color: #ffffff !important;
+}
+.lp-btn-primary *,
+.lp-btn-primary svg {
+  color: #ffffff !important;
+}
+.lp-btn-ghost,
+.lp-btn-ghost:hover {
+  color: #0a0a0b !important;
+}
+.lp-btn-ghost *,
+.lp-btn-ghost svg {
+  color: #0a0a0b !important;
+}
+
+/* Dark solid CTAs (HeroUI + utility) */
+.lp button.bg-\[\#0a0a0b\],
+.lp a.bg-\[\#0a0a0b\],
+.app-shell button.bg-\[\#0a0a0b\],
+.app-shell a.bg-\[\#0a0a0b\],
+.lp .bg-\[\#0a0a0b\].text-white,
+.app-shell .bg-\[\#0a0a0b\].text-white,
+.lp button.bg-default-foreground,
+.lp a.bg-default-foreground,
+.app-shell button.bg-default-foreground,
+.app-shell a.bg-default-foreground,
+.lp button.bg-foreground,
+.lp a.bg-foreground,
+.app-shell button.bg-foreground,
+.app-shell a.bg-foreground {
+  color: #ffffff !important;
+}
+.lp button.bg-\[\#0a0a0b\] *,
+.lp a.bg-\[\#0a0a0b\] *,
+.app-shell button.bg-\[\#0a0a0b\] *,
+.app-shell a.bg-\[\#0a0a0b\] *,
+.lp button.bg-default-foreground *,
+.lp a.bg-default-foreground *,
+.app-shell button.bg-default-foreground *,
+.app-shell a.bg-default-foreground *,
+.lp button.bg-foreground *,
+.lp a.bg-foreground *,
+.app-shell button.bg-foreground *,
+.app-shell a.bg-foreground * {
+  color: #ffffff !important;
+}
+
+/* Light / white CTAs → black text */
+.lp button.bg-white,
+.lp a.bg-white,
+.app-shell button.bg-white,
+.app-shell a.bg-white,
+.lp button.bg-\[\#f4f4f5\],
+.lp a.bg-\[\#f4f4f5\],
+.app-shell button.bg-\[\#f4f4f5\],
+.app-shell a.bg-\[\#f4f4f5\] {
+  color: #0a0a0b !important;
+}
+.lp button.bg-white *,
+.lp a.bg-white *,
+.app-shell button.bg-white *,
+.app-shell a.bg-white *,
+.lp button.bg-\[\#f4f4f5\] *,
+.lp a.bg-\[\#f4f4f5\] *,
+.app-shell button.bg-\[\#f4f4f5\] *,
+.app-shell a.bg-\[\#f4f4f5\] * {
+  color: #0a0a0b !important;
+}
+
+/* Explicit text-white utility always wins when requested */
+.lp .text-white,
+.app-shell .text-white {
+  color: #ffffff !important;
+}
+
+/* App shells (unchanged contract for routes) */
+.mm-page {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mm-page-x);
+  padding-right: var(--mm-page-x);
+  padding-top: var(--mm-page-y);
+  padding-bottom: var(--mm-page-y);
+}
+.mm-page-narrow {
+  max-width: 48rem;
+}
+.mm-page-wide {
+  max-width: 80rem;
+}
+.mm-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-stack);
+}
+.mm-stack-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.mm-grid {
+  display: grid;
+  gap: var(--mm-gap-lg);
+}
+.mm-title {
+  @apply text-2xl font-semibold tracking-tight;
+  color: #0a0a0b;
+  margin: 0;
+}
+.mm-subtitle {
+  @apply text-small;
+  color: #52525b;
+  margin: 0;
+  margin-top: 0.5rem;
+}
+
+/* ─── Premium landing system ─── */
+.lp {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  color: var(--mm-ink);
+  background: #eef1f8;
+  color-scheme: light;
+}
+
+/* Soft mesh orbs (static, no scroll blur cost) */
+.lp-mesh {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.lp-mesh::before,
+.lp-mesh::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.55;
+}
+.lp-mesh::before {
+  width: min(70vw, 640px);
+  height: min(70vw, 640px);
+  top: -12%;
+  left: -8%;
+  background: radial-gradient(circle, #a8bfff 0%, transparent 70%);
+}
+.lp-mesh::after {
+  width: min(60vw, 520px);
+  height: min(60vw, 520px);
+  top: 8%;
+  right: -10%;
+  background: radial-gradient(circle, #c4b5fd 0%, transparent 70%);
+}
+
+.lp-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.lp-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  position: relative;
+  z-index: 1;
+}
+@media (min-width: 768px) {
+  .lp-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Double-bezel shell */
+.lp-bezel {
+  border-radius: 2rem;
+  padding: 0.375rem;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 11, 0.04),
+    var(--mm-shadow-ambient);
+}
+.lp-bezel-core {
+  border-radius: calc(2rem - 0.375rem);
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+
+/* Island primary button */
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    transform 0.5s var(--mm-ease),
+    background 0.5s var(--mm-ease),
+    box-shadow 0.5s var(--mm-ease);
+  will-change: transform;
+}
+.lp-btn:active {
+  transform: scale(0.98);
+}
+.lp-btn-primary {
+  background: #0a0a0b;
+  color: #ffffff;
+  box-shadow: 0 10px 30px -10px rgba(10, 10, 11, 0.45);
+}
+.lp-btn-primary:hover {
+  background: #18181b;
+  color: #ffffff;
+  box-shadow: 0 16px 40px -12px rgba(10, 10, 11, 0.5);
+}
+.lp-btn-primary .lp-btn-icon {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transition: transform 0.5s var(--mm-ease);
+}
+.group:hover .lp-btn-icon {
+  transform: translateX(2px) translateY(-1px) scale(1.05);
+}
+.lp-btn-ghost {
+  background: rgba(255, 255, 255, 0.7);
+  color: #0a0a0b;
+  border: 1px solid var(--mm-hairline);
+  padding: 0.75rem 1.5rem;
+  backdrop-filter: blur(12px);
+}
+.lp-btn-ghost:hover {
+  background: #fff;
+  color: #0a0a0b;
+  box-shadow: var(--mm-shadow-soft);
+}
+
+.lp-btn-full {
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .lp-btn-full {
+    width: auto;
+  }
+}
+
+/* Floating island nav */
+.lp-island {
+  position: sticky;
+  top: 1rem;
+  z-index: 30;
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(100% - 2rem);
+  max-width: 56rem;
+}
+@media (min-width: 768px) {
+  .lp-island {
+    top: 1.25rem;
+    width: max-content;
+    max-width: min(920px, calc(100% - 3rem));
+  }
+}
+.lp-island-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 9999px;
+  padding: 0.5rem 0.55rem 0.5rem 0.55rem;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 11, 0.05),
+    0 12px 40px -12px rgba(20, 20, 43, 0.18);
+}
+
+/* Eyebrow */
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mm-ink-3);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 0 1px var(--mm-hairline);
+}
+
+/* Section spacing */
+.lp-section {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+@media (min-width: 768px) {
+  .lp-section {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+/* Soft bento cell */
+.lp-bento-shell {
+  border-radius: 1.75rem;
+  padding: 0.25rem;
+  background: rgba(10, 10, 11, 0.03);
+  box-shadow: 0 0 0 1px var(--mm-hairline);
+  height: 100%;
+  transition: box-shadow 0.6s var(--mm-ease);
+}
+.lp-bento-shell:hover {
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 11, 0.05),
+    var(--mm-shadow-lift);
+}
+.lp-bento-core {
+  height: 100%;
+  border-radius: calc(1.75rem - 0.25rem);
+  background: #fff;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+@media (min-width: 768px) {
+  .lp-bento-core {
+    padding: 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-btn,
+  .lp-bento-shell,
+  .lp-btn-icon {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "personapit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PersonaPit - gamified prediction markets with AI persona debates on HashKey Chain",
+  "scripts": {
+    "dev": "pnpm --filter @personapit/web dev",
+    "dev:agents": "pnpm --filter @personapit/agents dev",
+    "dev:all": "pnpm -r --parallel --filter @personapit/web --filter @personapit/agents dev",
+    "build": "pnpm -r build",
+    "build:contracts": "pnpm --filter @personapit/contracts build",
+    "test:contracts": "pnpm --filter @personapit/contracts test",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.32.1"
+}
