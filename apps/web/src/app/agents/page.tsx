@@ -25,6 +25,25 @@ const fieldClass =
 
 const labelClass = "text-[11px] font-semibold text-[#52525b]";
 
+const CHARACTER_PRESETS = {
+  trump: {
+    name: "Donald Trump",
+    bio: "A former U.S. president and business figure with a combative, media-savvy public speaking style.",
+    personalityType: "combative",
+    adjectives: "confident, provocative, competitive",
+    topics: "politics, business, media, markets",
+    styleChat: "Use short, emphatic statements. Challenge opponents directly. Focus on winning and headlines.",
+  },
+  ansem: {
+    name: "Ansem",
+    bio: "The pseudonymous voice behind the Black Bull avatar, known in crypto circles for high-conviction market commentary.",
+    personalityType: "high-conviction",
+    adjectives: "direct, energetic, market-focused",
+    topics: "crypto, memecoins, markets, internet culture",
+    styleChat: "Keep it sharp and internet-native. Make a clear market case with conviction and concise reasoning.",
+  },
+} as const;
+
 export default function AgentsPage() {
   const [agents, setAgents] = React.useState<Character[]>([]);
   const [error, setError] = React.useState<string | null>(null);
@@ -38,6 +57,15 @@ export default function AgentsPage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [justCreated, setJustCreated] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+
+  const applyPreset = (preset: (typeof CHARACTER_PRESETS)[keyof typeof CHARACTER_PRESETS]) => {
+    setName(preset.name);
+    setBio(preset.bio);
+    setPersonalityType(preset.personalityType);
+    setAdjectives(preset.adjectives);
+    setTopics(preset.topics);
+    setStyleChat(preset.styleChat);
+  };
 
   const refresh = React.useCallback(async () => {
     const list = await listAgents();
@@ -226,6 +254,24 @@ export default function AgentsPage() {
           <div className="lp-bezel h-fit">
             <div className="lp-bezel-core flex flex-col gap-3 p-4 sm:p-5">
               <h2 className="text-[15px] font-semibold text-[#0a0a0b]">New character</h2>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => applyPreset(CHARACTER_PRESETS.trump)}
+                  className="rounded-xl border border-black/[0.08] bg-[#fafafa] px-3 py-2 text-left transition-colors hover:border-[#5B7CFA]/35 hover:bg-[#5B7CFA]/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/40"
+                >
+                  <span className="block text-[12px] font-semibold text-[#0a0a0b]">Donald Trump</span>
+                  <span className="mt-0.5 block text-[10px] font-medium text-[#71717a]">Fill preset</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(CHARACTER_PRESETS.ansem)}
+                  className="rounded-xl border border-black/[0.08] bg-[#fafafa] px-3 py-2 text-left transition-colors hover:border-[#5B7CFA]/35 hover:bg-[#5B7CFA]/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/40"
+                >
+                  <span className="block text-[12px] font-semibold text-[#0a0a0b]">Ansem</span>
+                  <span className="mt-0.5 block text-[10px] font-medium text-[#71717a]">Fill preset</span>
+                </button>
+              </div>
 
               <label className="flex flex-col gap-1">
                 <span className={labelClass}>Name</span>

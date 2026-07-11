@@ -232,10 +232,13 @@ export function createApp(): Hono {
       return c.json({ error: "Wallet verification failed." }, 401);
     }
     const session = await runtimeStore.createSession(address);
-    const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+    const cookiePolicy =
+      process.env.NODE_ENV === "production"
+        ? "; SameSite=None; Secure"
+        : "; SameSite=Lax";
     c.header(
       "Set-Cookie",
-      `argue_session=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secure}`,
+      `argue_session=${session.token}; Path=/; HttpOnly; Max-Age=604800${cookiePolicy}`,
     );
     return c.json({ address, expiresAt: session.expiresAt });
   });
