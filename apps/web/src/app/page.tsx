@@ -12,10 +12,10 @@ import NextLink from "next/link";
 import { Accordion, AccordionItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
-import IslandNav from "@/components/landing/island-nav";
 import LandingFooter from "@/components/landing/landing-footer";
 import FeatureCard from "@/components/landing/feature-card";
 import { Reveal, RevealItem, RevealStagger } from "@/components/landing/reveal";
+import BrandIcon from "@/components/brand-icon";
 import { WalletConnectHeroPrimary } from "@/components/wallet-connect";
 import WalletAuthRedirect from "@/components/wallet-auth-redirect";
 import LiveArenasFeed from "@/components/live-arenas-feed";
@@ -36,12 +36,10 @@ export default function HomePage() {
       <div className="lp-mesh" aria-hidden />
       <div className="lp-grain" aria-hidden />
 
-      <IslandNav />
-
       {/* 1. Hero */}
-      <section className="lp-container pb-8 pt-10 md:pb-12 md:pt-16">
-        <div className="lp-bezel mx-auto max-w-5xl">
-          <div className="lp-bezel-core relative isolate overflow-hidden px-5 pb-0 pt-12 sm:px-10 sm:pt-16 md:px-14 md:pt-20">
+      <section className="pb-8 md:pb-12">
+        <div className="lp-bezel w-full rounded-none">
+          <div className="lp-bezel-core relative isolate overflow-hidden rounded-none px-5 pb-0 pt-10 sm:px-10 sm:pt-14 md:px-14 md:pt-16">
             <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
               <Image
                 src="/bg.jpeg"
@@ -55,8 +53,9 @@ export default function HomePage() {
             </div>
 
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+              <BrandIcon size={56} className="shadow-[0_10px_30px_-12px_rgba(10,10,11,0.45)]" />
               <Reveal>
-                <span className="lp-eyebrow">
+                <span className="mt-7 lp-eyebrow">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#5B7CFA]" />
                   Live matches. Live markets.
                 </span>
@@ -90,26 +89,38 @@ export default function HomePage() {
               <Reveal delay={0.21} className="mt-7 w-full max-w-lg">
                 <div className="relative isolate flex min-h-60 items-end overflow-hidden rounded-[1.4rem] border border-white/30 px-5 py-5 text-left shadow-[0_18px_45px_-22px_rgba(9,18,38,0.65)] sm:px-6">
                   <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-                    <Image
-                      src="/trump-ansem-hero.png"
-                      alt=""
-                      fill
-                      priority
-                      sizes="(max-width: 640px) calc(100vw - 3.5rem), 512px"
-                      className="object-cover object-center"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#07101f]/95 via-[#07101f]/45 to-transparent" />
+                    <div className="absolute inset-y-0 left-0 w-[45%]">
+                      <Image
+                        src="/trump-ansem-hero.png"
+                        alt=""
+                        fill
+                        priority
+                        sizes="(max-width: 640px) 45vw, 230px"
+                        className="object-cover object-left"
+                      />
+                    </div>
+                    <div className="absolute inset-y-0 right-0 w-[55%]">
+                      <Image
+                        src="/ansem-black-bull.webp"
+                        alt=""
+                        fill
+                        priority
+                        sizes="(max-width: 640px) 55vw, 282px"
+                        className="object-cover object-right"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#07101f]/95 via-[#07101f]/35 to-transparent" />
                   </div>
 
                   <div className="max-w-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/65">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
                       Character matchups
                     </p>
                     <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-white sm:text-2xl">
-                      Donald Trump × Ansem
+                      ANSEM VS TRUMP
                     </h2>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-white/80">
-                      Pick the question. Put two voices in the room.
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-white">
+                      Who wins the memecoin race?
                     </p>
                     <NextLink
                       href="/create"
