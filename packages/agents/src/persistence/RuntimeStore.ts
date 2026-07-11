@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from "node:crypto";
 import postgres, { type Sql } from "postgres";
 
 import type {
@@ -24,6 +25,8 @@ type RoomRow = {
 };
 
 type CharacterRow = {
+  id: string;
+  owner_address: string;
   character: unknown;
 };
 
@@ -45,6 +48,10 @@ function parseJson<T>(value: unknown): T {
 
 function toNumber(value: string | number | null): number | undefined {
   return value === null ? undefined : Number(value);
+}
+
+function hashToken(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function toSession(row: RoomRow, messages: AgentMessage[]): RoomSession {
@@ -105,11 +112,22 @@ export class RuntimeStore {
     await this.sql`
       CREATE TABLE IF NOT EXISTS runtime_characters (
         id TEXT PRIMARY KEY,
-        name_key TEXT NOT NULL UNIQUE,
+        name_key TEXT NOT NULL,
+        owner_address TEXT NOT NULL DEFAULT '',
         character JSONB NOT NULL,
         created_at BIGINT NOT NULL,
         updated_at BIGINT NOT NULL
       )
+    `;
+    await this.sql`
+      ALTER TABLE runtime_characters ADD COLUMN IF NOT EXISTS owner_address TEXT NOT NULL DEFAULT ''
+    `;
+    await this.sql`
+      ALTER TABLE runtime_characters DROP CONSTRAINT IF EXISTS runtime_characters_name_key_key
+    `;
+    await this.sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS runtime_characters_owner_name_idx
+      ON runtime_characters (owner_address, name_key)
     `;
     await this.sql`
       CREATE TABLE IF NOT EXISTS runtime_rooms (
@@ -125,11 +143,29 @@ export class RuntimeStore {
         error TEXT,
         settlement JSONB,
         on_chain JSONB,
+        owner_address TEXT,
         updated_at BIGINT NOT NULL
       )
     `;
     await this.sql`
       ALTER TABLE runtime_rooms ADD COLUMN IF NOT EXISTS on_chain JSONB
+    `;
+    await this.sql`
+      ALTER TABLE runtime_rooms ADD COLUMN IF NOT EXISTS owner_address TEXT
+    `;
+    await this.sql`
+      CREATE TABLE IF NOT EXISTS auth_nonces (
+        nonce_hash TEXT PRIMARY KEY,
+        owner_address TEXT NOT NULL,
+        expires_at BIGINT NOT NULL
+      )
+    `;
+    await this.sql`
+      CREATE TABLE IF NOT EXISTS auth_sessions (
+        token_hash TEXT PRIMARY KEY,
+        owner_address TEXT NOT NULL,
+        expires_at BIGINT NOT NULL
+      )
     `;
     await this.sql`
       CREATE TABLE IF NOT EXISTS runtime_messages (
@@ -157,15 +193,16 @@ export class RuntimeStore {
     await this.sql.end({ timeout: 5 });
   }
 
-  async saveCharacter(character: Character): Promise<void> {
+  async saveCharacter(character: Character, ownerAddress: string): Promise<void> {
     const id = character.id;
     if (!id) throw new Error("Cannot persist a character without an id");
     const now = Date.now();
     await this.sql`
-      INSERT INTO runtime_characters (id, name_key, character, created_at, updated_at)
+      INSERT INTO runtime_characters (id, name_key, owner_address, character, created_at, updated_at)
       VALUES (
         ${id},
         ${character.name.toLowerCase()},
+        ${ownerAddress.toLowerCase()},
         ${JSON.stringify(character)}::jsonb,
         ${now},
         ${now}
@@ -177,11 +214,89 @@ export class RuntimeStore {
     `;
   }
 
-  async loadCharacters(): Promise<Character[]> {
+  async loadCharacters(ownerAddress?: string): Promise<Character[]> {
     const rows = await this.sql<CharacterRow[]>`
-      SELECT character FROM runtime_characters ORDER BY created_at ASC
+      SELECT id, owner_address, character FROM runtime_characters
+      ${ownerAddress ? this.sql`WHERE owner_address = ${ownerAddress.toLowerCase()}` : this.sql``}
+      ORDER BY created_at ASC
     `;
     return rows.map((row) => parseJson<Character>(row.character));
+  }
+
+  async deleteCharacter(id: string, ownerAddress: string): Promise<boolean> {
+    const rows = await this.sql`
+      DELETE FROM runtime_characters
+      WHERE id = ${id} AND owner_address = ${ownerAddress.toLowerCase()}
+      RETURNING id
+    `;
+    return rows.length > 0;
+  }
+
+  async characterBelongsTo(id: string, ownerAddress: string): Promise<boolean> {
+    const rows = await this.sql`
+      SELECT id FROM runtime_characters
+      WHERE id = ${id} AND owner_address = ${ownerAddress.toLowerCase()}
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  }
+
+  async setRoomOwner(roomId: string, ownerAddress: string): Promise<void> {
+    await this.sql`
+      UPDATE runtime_rooms SET owner_address = ${ownerAddress.toLowerCase()}
+      WHERE id = ${roomId}
+    `;
+  }
+
+  async roomBelongsTo(roomId: string, ownerAddress: string): Promise<boolean> {
+    const rows = await this.sql`
+      SELECT id FROM runtime_rooms
+      WHERE id = ${roomId} AND owner_address = ${ownerAddress.toLowerCase()}
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  }
+
+  async createAuthNonce(ownerAddress: string): Promise<string> {
+    const nonce = randomBytes(32).toString("hex");
+    await this.sql`
+      DELETE FROM auth_nonces WHERE expires_at < ${Date.now()}
+    `;
+    await this.sql`
+      INSERT INTO auth_nonces (nonce_hash, owner_address, expires_at)
+      VALUES (${hashToken(nonce)}, ${ownerAddress.toLowerCase()}, ${Date.now() + 5 * 60_000})
+    `;
+    return nonce;
+  }
+
+  async consumeAuthNonce(nonce: string, ownerAddress: string): Promise<boolean> {
+    const rows = await this.sql`
+      DELETE FROM auth_nonces
+      WHERE nonce_hash = ${hashToken(nonce)}
+        AND owner_address = ${ownerAddress.toLowerCase()}
+        AND expires_at > ${Date.now()}
+      RETURNING nonce_hash
+    `;
+    return rows.length > 0;
+  }
+
+  async createSession(ownerAddress: string): Promise<{ token: string; expiresAt: number }> {
+    const token = randomBytes(32).toString("base64url");
+    const expiresAt = Date.now() + 7 * 24 * 60 * 60_000;
+    await this.sql`
+      INSERT INTO auth_sessions (token_hash, owner_address, expires_at)
+      VALUES (${hashToken(token)}, ${ownerAddress.toLowerCase()}, ${expiresAt})
+    `;
+    return { token, expiresAt };
+  }
+
+  async getSessionOwner(token: string): Promise<string | null> {
+    const rows = await this.sql<{ owner_address: string }[]>`
+      SELECT owner_address FROM auth_sessions
+      WHERE token_hash = ${hashToken(token)} AND expires_at > ${Date.now()}
+      LIMIT 1
+    `;
+    return rows[0]?.owner_address ?? null;
   }
 
   async createRoom(session: RoomSession): Promise<void> {

@@ -148,6 +148,7 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
         "Content-Type": "application/json",
         ...(init?.headers ?? {}),
       },
+      credentials: "include",
       cache: "no-store",
     });
   } catch {
@@ -177,6 +178,7 @@ function resolvePersonaPair(room: Record<string, unknown>): {
   characterIds: string[];
 } {
   const config = (room.config as Record<string, unknown> | undefined) ?? {};
+  const characterNames = (config.characterNames as Record<string, string> | undefined) ?? {};
   const agents = (room.agents as string[] | undefined) ?? [];
   const fromConfig = (config.characterIds as string[] | undefined) ?? [];
   const fromTop = (room.characterIds as string[] | undefined) ?? [];
@@ -198,8 +200,8 @@ function resolvePersonaPair(room: Record<string, unknown>): {
 
   const idA = namedA?.id || characterIds[0] || "";
   const idB = namedB?.id || characterIds[1] || "";
-  const nameA = namedA?.name || idA || "Agent A";
-  const nameB = namedB?.name || idB || "Agent B";
+  const nameA = namedA?.name || characterNames[idA] || idA || "Agent A";
+  const nameB = namedB?.name || characterNames[idB] || idB || "Agent B";
 
   return {
     characterIds: characterIds.length ? characterIds : [idA, idB].filter(Boolean),
@@ -307,6 +309,33 @@ export async function registerAgent(character: Character): Promise<Character> {
     return { ...character, id: data.id, name: data.name };
   }
   return data as Character;
+}
+
+export async function deleteAgent(id: string): Promise<void> {
+  await api<{ ok: boolean }>(`/agents/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
+export async function walletSignIn(address: string, signMessage: (args: { message: string }) => Promise<string>): Promise<void> {
+  const challenge = await api<{ nonce: string; message: string }>("/auth/nonce", {
+    method: "POST",
+    body: JSON.stringify({ address }),
+  });
+  const signature = await signMessage({ message: challenge.message });
+  await api<{ address: string }>("/auth/verify", {
+    method: "POST",
+    body: JSON.stringify({ address, nonce: challenge.nonce, signature }),
+  });
+}
+
+export async function getWalletSession(): Promise<string | null> {
+  try {
+    const result = await api<{ address: string }>("/auth/session");
+    return result.address;
+  } catch {
+    return null;
+  }
 }
 
 export async function createRoom(input: {

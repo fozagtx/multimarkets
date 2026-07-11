@@ -5,6 +5,8 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import { getAddress, verifyMessage } from "ethers";
 import { loadCharacterFromDisk, validateCharacter } from "./character/loader.js";
 import { RoomRuntime } from "./room/RoomRuntime.js";
 import { RuntimeStore } from "./persistence/RuntimeStore.js";
@@ -47,6 +49,32 @@ export async function loadDotEnv(): Promise<void> {
 const characterRegistry = new Map<string, Character>();
 let runtime = new RoomRuntime();
 let runtimeStore: RuntimeStore | null = null;
+
+type AuthenticatedOwner = { address: string };
+
+function normalizeAddress(value: string): string | null {
+  try {
+    return getAddress(value).toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function cookieValue(header: string | undefined, name: string): string | null {
+  if (!header) return null;
+  const prefix = `${name}=`;
+  return (
+    header
+      .split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(prefix))
+      ?.slice(prefix.length) ?? null
+  );
+}
+
+function authMessage(address: string, nonce: string): string {
+  return `Sign in to Argue\nWallet: ${address}\nNonce: ${nonce}`;
+}
 
 const CreateRoomBody = z.object({
   /** Two lockable fighters — master is never in this list */
@@ -153,13 +181,68 @@ export function createApp(): Hono {
       c.header("Access-Control-Allow-Origin", origin);
       c.header("Vary", "Origin");
     }
-    c.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    c.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
     c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     c.header("Access-Control-Allow-Credentials", "true");
     if (c.req.method === "OPTIONS") {
       return c.body(null, 204);
     }
     await next();
+  });
+
+  async function requireOwner(c: { req: { header(name: string): string | undefined } }): Promise<AuthenticatedOwner | null> {
+    const token = cookieValue(c.req.header("cookie"), "argue_session");
+    if (!token || !runtimeStore) return null;
+    const address = await runtimeStore.getSessionOwner(token);
+    return address ? { address } : null;
+  }
+
+  app.post("/auth/nonce", async (c) => {
+    const body = await c.req.json().catch(() => null);
+    const address =
+      body && typeof body === "object" && "address" in body
+        ? normalizeAddress(String(body.address))
+        : null;
+    if (!address || !runtimeStore) return c.json({ error: "A valid wallet address is required." }, 400);
+    const nonce = await runtimeStore.createAuthNonce(address);
+    return c.json({ nonce, message: authMessage(address, nonce) });
+  });
+
+  app.post("/auth/verify", async (c) => {
+    const body = await c.req.json().catch(() => null);
+    const rawAddress =
+      body && typeof body === "object" && "address" in body ? String(body.address) : "";
+    const nonce = body && typeof body === "object" && "nonce" in body ? String(body.nonce) : "";
+    const signature =
+      body && typeof body === "object" && "signature" in body ? String(body.signature) : "";
+    const address = normalizeAddress(rawAddress);
+    if (!address || !nonce || !signature || !runtimeStore) {
+      return c.json({ error: "Invalid sign-in request." }, 400);
+    }
+    let recovered: string | null = null;
+    try {
+      recovered = normalizeAddress(verifyMessage(authMessage(address, nonce), signature));
+    } catch {
+      recovered = null;
+    }
+    const validNonce =
+      recovered === address &&
+      (await runtimeStore.consumeAuthNonce(nonce, address));
+    if (!validNonce || recovered !== address) {
+      return c.json({ error: "Wallet verification failed." }, 401);
+    }
+    const session = await runtimeStore.createSession(address);
+    const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+    c.header(
+      "Set-Cookie",
+      `argue_session=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secure}`,
+    );
+    return c.json({ address, expiresAt: session.expiresAt });
+  });
+
+  app.get("/auth/session", async (c) => {
+    const owner = await requireOwner(c);
+    return owner ? c.json({ address: owner.address }) : c.json({ address: null }, 401);
   });
 
   app.get("/health", (c) => {
@@ -208,9 +291,11 @@ export function createApp(): Hono {
     );
   });
 
-  app.get("/agents", (c) => {
+  app.get("/agents", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore) return c.json({ error: "Sign in with your wallet to view characters." }, 401);
     const unique = new Map<string, Character>();
-    for (const ch of characterRegistry.values()) {
+    for (const ch of await runtimeStore.loadCharacters(owner.address)) {
       unique.set(ch.id ?? ch.name, ch);
     }
     // Master is coordinator-only - never offered as a lockable persona
@@ -247,7 +332,7 @@ export function createApp(): Hono {
       const resolve = (id: string | undefined) => {
         if (!id) return { id: "", name: "Unknown" };
         const ch = characterRegistry.get(id);
-        return { id, name: ch?.name ?? id };
+        return { id, name: ch?.name ?? session.config.characterNames?.[id] ?? id };
       };
       const a = resolve(personaIds[0]);
       const b = resolve(personaIds[1]);
@@ -280,6 +365,8 @@ export function createApp(): Hono {
   });
 
   app.post("/agents", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore) return c.json({ error: "Sign in with your wallet to save characters." }, 401);
     let body: unknown;
     try {
       body = await c.req.json();
@@ -294,12 +381,23 @@ export function createApp(): Hono {
       );
     }
     const character = validateCharacter(parsed.data);
-    await runtimeStore?.saveCharacter(character);
+    character.id = randomUUID();
+    await runtimeStore.saveCharacter(character, owner.address);
     registerCharacter(character);
     return c.json({ ok: true, id: character.id, name: character.name }, 201);
   });
 
+  app.delete("/agents/:id", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore) return c.json({ error: "Sign in with your wallet to remove characters." }, 401);
+    const deleted = await runtimeStore.deleteCharacter(c.req.param("id"), owner.address);
+    if (!deleted) return c.json({ error: "Character not found." }, 404);
+    return c.json({ ok: true });
+  });
+
   app.post("/rooms", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore) return c.json({ error: "Sign in with your wallet to create a match." }, 401);
     let body: unknown;
     try {
       body = await c.req.json();
@@ -334,6 +432,9 @@ export function createApp(): Hono {
           400,
         );
       }
+      if (!(await Promise.all(ids.map((id) => runtimeStore!.characterBelongsTo(id, owner.address)))).every(Boolean)) {
+        return c.json({ error: "You can only use characters in your library." }, 403);
+      }
 
       const masterId = parsed.data.masterId ?? "master";
       const masterCharacter = getCharacterOrThrow(masterId);
@@ -342,6 +443,9 @@ export function createApp(): Hono {
       const session = await runtime.createRoom({
         config: {
           characterIds: ids,
+          characterNames: Object.fromEntries(
+            personas.map((persona) => [persona.id ?? persona.name, persona.name]),
+          ),
           topic: parsed.data.topic,
           marketQuestion: parsed.data.marketQuestion,
           oracleMarket: {
@@ -358,6 +462,7 @@ export function createApp(): Hono {
         characters: personas,
         masterCharacter,
       });
+      await runtimeStore.setRoomOwner(session.id, owner.address);
       return c.json({ room: session }, 201);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -376,6 +481,10 @@ export function createApp(): Hono {
   });
 
   app.post("/rooms/:id/start", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore || !(await runtimeStore.roomBelongsTo(c.req.param("id"), owner.address))) {
+      return c.json({ error: "Only the match creator can start it." }, 403);
+    }
     try {
       // Fail fast before async loop if LLM is missing
       const llm = llmReadiness();
@@ -399,6 +508,10 @@ export function createApp(): Hono {
   });
 
   app.post("/rooms/:id/sync-market", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore || !(await runtimeStore.roomBelongsTo(c.req.param("id"), owner.address))) {
+      return c.json({ error: "Only the match creator can update it." }, 403);
+    }
     try {
       await runtime.syncOracleMarkets();
       const session = runtime.getRoom(c.req.param("id"));
@@ -411,6 +524,10 @@ export function createApp(): Hono {
   });
 
   app.post("/rooms/:id/notes", async (c) => {
+    const owner = await requireOwner(c);
+    if (!owner || !runtimeStore || !(await runtimeStore.roomBelongsTo(c.req.param("id"), owner.address))) {
+      return c.json({ error: "Only the match creator can add notes." }, 403);
+    }
     let body: unknown;
     try {
       body = await c.req.json();

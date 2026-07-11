@@ -7,7 +7,7 @@
 import React from "react";
 import NextLink from "next/link";
 import { Icon } from "@iconify/react";
-import { listAgents, registerAgent, type Character } from "@/lib/agent-api";
+import { deleteAgent, listAgents, registerAgent, type Character } from "@/lib/agent-api";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Reveal } from "@/components/landing/reveal";
 
@@ -37,6 +37,7 @@ export default function AgentsPage() {
   const [styleChat, setStyleChat] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [justCreated, setJustCreated] = React.useState<string | null>(null);
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
   const refresh = React.useCallback(async () => {
     const list = await listAgents();
@@ -110,6 +111,20 @@ export default function AgentsPage() {
       toastError("Character not saved", msg);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const onDelete = async (agent: Character) => {
+    if (!agent.id || !window.confirm(`Remove ${agent.name} from your character library?`)) return;
+    try {
+      setDeletingId(agent.id);
+      await deleteAgent(agent.id);
+      await refresh();
+      toastSuccess("Character removed", `${agent.name} is no longer available for new matches.`);
+    } catch {
+      toastError("Character not removed", "Try again in a moment.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -189,9 +204,20 @@ export default function AgentsPage() {
                   {Array.isArray(agent.bio) ? agent.bio[0] : agent.bio}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full bg-[#f4f4f5] px-2 py-0.5 text-[10px] font-semibold text-[#52525b]">
-                {personalityFrom(agent)}
-              </span>
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="rounded-full bg-[#f4f4f5] px-2 py-0.5 text-[10px] font-semibold text-[#52525b]">
+                  {personalityFrom(agent)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void onDelete(agent)}
+                  disabled={deletingId === agent.id}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#71717a] transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 disabled:opacity-50"
+                  aria-label={`Remove ${agent.name}`}
+                >
+                  <Icon icon="solar:trash-bin-trash-linear" width={16} />
+                </button>
+              </div>
             </div>
           ))}
         </Reveal>

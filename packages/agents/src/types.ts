@@ -95,6 +95,8 @@ export type RoomStatus =
 
 export interface RoomConfig {
   characterIds: string[];
+  /** Immutable display-name snapshot so completed rooms remain readable after deletion. */
+  characterNames?: Record<string, string>;
   topic: string;
   marketQuestion: string;
   oracleMarket?: OracleMarketConfig;
