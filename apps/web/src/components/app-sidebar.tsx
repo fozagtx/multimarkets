@@ -50,6 +50,17 @@ export default function AppSidebar({
     create: "/create",
   };
 
+  // Sidebar owns navigation through Next's router. Passing href to HeroUI's
+  // ListboxItem creates a native anchor and triggers a full document reload.
+  const navigationItems = React.useMemo(
+    () =>
+      appSidebarItems.map((section) => ({
+        ...section,
+        items: section.items?.map((item) => ({ ...item, href: undefined })),
+      })),
+    [],
+  );
+
   return (
     <div
       className={cn(
@@ -134,7 +145,7 @@ export default function AppSidebar({
           defaultSelectedKey={selectedKey}
           selectedKeys={[selectedKey]}
           isCompact={isCompact}
-          items={appSidebarItems}
+          items={navigationItems}
           iconClassName="group-data-[selected=true]:text-default-50"
           itemClasses={{
             base: "px-3 rounded-large data-[selected=true]:!bg-foreground data-[selected=true]:!text-white",

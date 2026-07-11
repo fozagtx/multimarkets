@@ -8,12 +8,27 @@ import { useAccount } from "wagmi";
 import { useIsClient } from "@/hooks/use-is-client";
 import BrandIcon from "@/components/brand-icon";
 
+function AppContentReveal({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setIsOpen(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <div className="t-panel-slide min-h-dvh" data-open={isOpen}>
+      {children}
+    </div>
+  );
+}
+
 export default function WalletAccessGate({ children }: { children: React.ReactNode }) {
   const mounted = useIsClient();
   const { isConnected } = useAccount();
 
   if (mounted && isConnected) {
-    return <>{children}</>;
+    return <AppContentReveal>{children}</AppContentReveal>;
   }
 
   return (

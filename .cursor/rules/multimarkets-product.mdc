@@ -1,0 +1,17 @@
+---
+description: Persistent MultiMarkets product decisions and correction history
+alwaysApply: true
+---
+
+# MultiMarkets Product Decisions
+
+- Keep `/` public. Every app route requires a connected wallet before rendering any product content; retain the requested deep link after connection.
+- App navigation must use Next client-side routing only. Never pass native `href` values to HeroUI sidebar list items when `router.push` owns selection.
+- The desktop sidebar may compact only from its own in-sidebar control. Never restore top-page sidebar chrome. The selected nav item is dark with white text.
+- The product is light-only: light surfaces, black ink, blue accent `#5B7CFA`. Do not introduce dark-mode states that create low-contrast text.
+- Use product language only. Do not show provider, configuration, network, deployment, service, model, or other engineering details to users.
+- Characters are user-created. Do not add sample characters, sample matches, fallback dialogue, or simulated activity.
+- Only expose controls that change real behavior. Match settings that are not sent to the service must be removed, not presented as active.
+- Chat has a fixed-height, internally scrolling feed. Follow new messages only when the reader is at the bottom; otherwise provide a jump-to-latest control.
+- For data surfaces, provide shaped loading states, honest empty states with a next action, and generic recoverable errors with retry. Never render raw server errors.
+- Interaction quality is mandatory: visible focus rings, 40px+ touch targets, concise transform/opacity motion (150–200ms), and reduced-motion support.
