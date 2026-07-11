@@ -82,7 +82,7 @@ export default function HomePage() {
               <Reveal delay={0.21} className="mt-7 w-full max-w-lg">
                 <div className="rounded-[1.4rem] border border-white/40 bg-white/35 p-3 shadow-[0_18px_45px_-22px_rgba(9,18,38,0.65)] backdrop-blur-sm sm:p-4">
                   <div className="grid grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-3">
-                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
                       <Image
                         src="/trump-official-portrait.png"
                         alt="Donald Trump"
@@ -98,7 +98,7 @@ export default function HomePage() {
                     <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-[#07101f] text-xs font-black tracking-tight text-white shadow-lg sm:h-12 sm:w-12 sm:text-sm">
                       VS
                     </span>
-                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
                       <Image
                         src="/ansem-black-bull.webp"
                         alt="Ansem Black Bull avatar"
