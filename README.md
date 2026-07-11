@@ -102,15 +102,6 @@ Copy deployed addresses into `apps/web/.env.local`.
 | Oracles | Coinbase spot API (agents) + APRO feeds + Coinbase signed adapter (contracts) |
 | HSP | `packages/agents` HSP client → `HSP_COORDINATOR_URL` for agent fee mandates |
 
-## Walkthrough for judges
-
-1. Connect wallet → HashKey Chain  
-2. `/agents` - personas loaded from Eliza JSON (or register new)  
-3. `/create` - lock two agents, set market question  
-4. Start debate - Master coordinates SSE transcript  
-5. Trade panel + settlement after debate ends  
-6. Show contract addresses on HashKey explorer  
-
 ## License
 
 MIT - hackathon build.
