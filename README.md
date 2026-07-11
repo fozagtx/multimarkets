@@ -72,14 +72,28 @@ export HASHKEY_RPC_URL=https://mainnet.hsk.xyz
 ### Run
 
 ```bash
-# terminal 1 - agent runtime (real LLM + Coinbase oracle)
-pnpm --filter @multimarkets/agents dev
+# terminal 1 - agent runtime
+pnpm dev:agents
 
 # terminal 2 - web
-pnpm --filter @multimarkets/web dev
+pnpm dev
 ```
 
 Open http://localhost:3000
+
+### Workspace tasks
+
+Moonrepo manages local workspace tasks and CI while pnpm remains the package
+manager:
+
+```bash
+pnpm moon project web
+pnpm build
+pnpm test:contracts
+```
+
+Railway and Docker deployments continue to use their existing independent build
+contexts in this phase.
 
 ### Contracts
 

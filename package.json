@@ -4,16 +4,20 @@
   "private": true,
   "description": "MultiMarkets - gamified prediction markets with AI persona debates on HashKey Chain",
   "scripts": {
-    "dev": "pnpm --filter @multimarkets/web dev",
-    "dev:agents": "pnpm --filter @multimarkets/agents dev",
-    "dev:all": "pnpm -r --parallel --filter @multimarkets/web --filter @multimarkets/agents dev",
-    "build": "pnpm -r build",
-    "build:contracts": "pnpm --filter @multimarkets/contracts build",
-    "test:contracts": "pnpm --filter @multimarkets/contracts test",
-    "lint": "pnpm -r lint"
+    "moon": "moon",
+    "dev": "moon run web:dev",
+    "dev:agents": "moon run agents:dev",
+    "dev:all": "moon run web:dev agents:dev",
+    "build": "moon run :build",
+    "build:contracts": "moon run contracts:build",
+    "test:contracts": "moon run contracts:test",
+    "lint": "moon run web:lint"
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@10.32.1",
+  "devDependencies": {
+    "@moonrepo/cli": "^2.4.2"
+  }
 }

@@ -1,0 +1,56 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "javascript"
+
+fileGroups:
+  sources:
+    - "src/**/*"
+    - "characters/**/*"
+  configs:
+    - "package.json"
+    - "tsconfig.json"
+
+tasks:
+  dev:
+    command: "pnpm run dev"
+    preset: "server"
+
+  build:
+    command: "pnpm run build"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+    outputs:
+      - "dist"
+
+  typecheck:
+    command: "pnpm run typecheck"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+
+  start:
+    command: "pnpm run start"
+    deps:
+      - "~:build"
+    preset: "server"
+
+  db-migrate:
+    command: "pnpm run db:migrate"
+    options:
+      cache: false
+      interactive: true
+
+  smoke:
+    command: "pnpm run smoke"
+    options:
+      cache: false
+
+  check-personality:
+    command: "pnpm run check:personality"
+    options:
+      cache: false

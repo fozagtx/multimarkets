@@ -1,0 +1,43 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "javascript"
+
+fileGroups:
+  sources:
+    - "src/**/*"
+    - "public/**/*"
+  configs:
+    - "next.config.mjs"
+    - "postcss.config.mjs"
+    - "tailwind.config.ts"
+    - "tsconfig.json"
+    - "package.json"
+
+tasks:
+  dev:
+    command: "pnpm run dev"
+    preset: "server"
+
+  build:
+    command: "pnpm run build"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+    outputs:
+      - ".next"
+
+  lint:
+    command: "pnpm exec eslint src"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+
+  start:
+    command: "pnpm run start"
+    deps:
+      - "~:build"
+    preset: "server"

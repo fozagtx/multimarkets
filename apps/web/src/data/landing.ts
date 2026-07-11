@@ -56,11 +56,6 @@ export const solutions = [
 
 export const differentiators = [
   {
-    key: "vs-books",
-    title: "Not just another order book",
-    body: "Polymarket-style charts show price. MultiMarkets shows the fight that moves the price.",
-  },
-  {
     key: "vs-chat",
     title: "Not a chatbot playground",
     body: "You get a referee, two distinct characters, and one clear yes-or-no question.",
@@ -103,12 +98,6 @@ export const features = solutions.map((s) => ({
   icon: s.icon,
   metric: s.metric,
 }));
-
-export const metrics = [
-  { label: "Format", value: "Live match" },
-  { label: "Market", value: "Yes / No" },
-  { label: "Action", value: "Trade mid-debate" },
-];
 
 export const faqs = [
   {

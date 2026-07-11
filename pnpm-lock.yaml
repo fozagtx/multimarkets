@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@moonrepo/cli':
+        specifier: ^2.4.2
+        version: 2.4.2
 
   apps/web:
     dependencies:
@@ -1489,6 +1493,49 @@ packages:
   '@metamask/utils@9.3.0':
     resolution: {integrity: sha512-w8CVbdkDrVXFJbfBSlDfafDR6BAkpDmv1bC1UJVCoVny5tW2RKAdn9i68Xf7asYT4TnUhl/hN4zfUiKQq9II4g==}
     engines: {node: '>=16.0.0'}
+
+  '@moonrepo/cli@2.4.2':
+    resolution: {integrity: sha512-/Ga7i9yzGzmUKy/n8pCeFEpFJnQs02+CEmQYOv/9ngI5G7zMhI+rB5zBVfJZFnKIKGKPrS3Nl73cLa7b8kDtVw==}
+    hasBin: true
+
+  '@moonrepo/core-linux-arm64-gnu@2.4.2':
+    resolution: {integrity: sha512-6xdS2MF6NYjky+3PgIo17L9DF3nDurUYultUqGwue8u5lyHvredBQY8SPfoBNqVCWpmlGG1zTszB4NXxCz32Wg==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@moonrepo/core-linux-arm64-musl@2.4.2':
+    resolution: {integrity: sha512-fzVvZn4HzWmdWNyZzhhjPAFFRO+2MsIFWXC4CZVS9uvnpjooxOP/XcccS5dD3Q5Vi89Eib4K0SLuos+UTzRTfw==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@moonrepo/core-linux-x64-gnu@2.4.2':
+    resolution: {integrity: sha512-Uw+mV/AAubnL8wVCv7rMkvtoU5XKnuJ5tZDpLwUiR3djKVGEg3ZbhX8KNuo6ANhxE1BsIzH5PXmlWPYakqLgTg==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@moonrepo/core-linux-x64-musl@2.4.2':
+    resolution: {integrity: sha512-BcBymmcLcaDY0QXx0+wsEzBL2CXcodkGJs2752gsbLkdeMeopyJMZeafd4EeJ+RTLmR4ov+Kz7QMpdVhCAPMNA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@moonrepo/core-macos-arm64@2.4.2':
+    resolution: {integrity: sha512-V0O+punkt6VjdH2Dg6Jt4hN4m+M7ugwheapYlVL2QfPITttXn8SjFY2h7hyVEgBJqRGpCxXGaubhtztZReGnjQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@moonrepo/core-macos-x64@2.4.2':
+    resolution: {integrity: sha512-Etb4WY/Xb5nD9IZbsgTscn9F7akGkCFRjcMqhepomx917VgjrZ5gLKrBbw9YNBlIEAo9xzalzV5tbxHzrm8pvQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@moonrepo/core-windows-x64-msvc@2.4.2':
+    resolution: {integrity: sha512-oE7NLmAQrxZjBk364nA68NKdP+1M5GMIkQNwEV7Aht6DeVxfCyTcVDxcAo7jzR66sET/Nm2r/wojVN8CjxMIjA==}
+    cpu: [x64]
+    os: [win32]
 
   '@napi-rs/wasm-runtime@1.1.6':
     resolution: {integrity: sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==}
@@ -9207,6 +9254,39 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@moonrepo/cli@2.4.2':
+    dependencies:
+      detect-libc: 2.1.2
+    optionalDependencies:
+      '@moonrepo/core-linux-arm64-gnu': 2.4.2
+      '@moonrepo/core-linux-arm64-musl': 2.4.2
+      '@moonrepo/core-linux-x64-gnu': 2.4.2
+      '@moonrepo/core-linux-x64-musl': 2.4.2
+      '@moonrepo/core-macos-arm64': 2.4.2
+      '@moonrepo/core-macos-x64': 2.4.2
+      '@moonrepo/core-windows-x64-msvc': 2.4.2
+
+  '@moonrepo/core-linux-arm64-gnu@2.4.2':
+    optional: true
+
+  '@moonrepo/core-linux-arm64-musl@2.4.2':
+    optional: true
+
+  '@moonrepo/core-linux-x64-gnu@2.4.2':
+    optional: true
+
+  '@moonrepo/core-linux-x64-musl@2.4.2':
+    optional: true
+
+  '@moonrepo/core-macos-arm64@2.4.2':
+    optional: true
+
+  '@moonrepo/core-macos-x64@2.4.2':
+    optional: true
+
+  '@moonrepo/core-windows-x64-msvc@2.4.2':
+    optional: true
+
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
@@ -13144,8 +13224,7 @@ snapshots:
 
   detect-europe-js@0.1.2: {}
 
-  detect-libc@2.1.2:
-    optional: true
+  detect-libc@2.1.2: {}
 
   detect-node-es@1.1.0: {}
 

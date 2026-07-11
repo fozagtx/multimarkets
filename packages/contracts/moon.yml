@@ -1,0 +1,97 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "javascript"
+
+fileGroups:
+  sources:
+    - "contracts/**/*"
+    - "test/**/*"
+    - "scripts/**/*"
+  configs:
+    - "hardhat.config.ts"
+    - "tsconfig.json"
+    - "package.json"
+
+tasks:
+  compile:
+    command: "pnpm run compile"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+    outputs:
+      - "artifacts"
+      - "typechain-types"
+
+  build:
+    command: "pnpm run build"
+    deps:
+      - "~:compile"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/package.json"
+      - "/pnpm-lock.yaml"
+    outputs:
+      - "artifacts"
+      - "typechain-types"
+
+  test:
+    command: "pnpm run test"
+    deps:
+      - "~:compile"
+    options:
+      cache: false
+
+  coverage:
+    command: "pnpm run coverage"
+    deps:
+      - "~:compile"
+    options:
+      cache: false
+
+  typechain:
+    command: "pnpm run typechain"
+    deps:
+      - "~:compile"
+    outputs:
+      - "typechain-types"
+
+  clean:
+    command: "pnpm run clean"
+    options:
+      cache: false
+
+  node:
+    command: "pnpm run node"
+    preset: "server"
+
+  deploy-testnet:
+    command: "pnpm run deploy:testnet"
+    options:
+      cache: false
+      interactive: true
+
+  deploy-testnet-sync:
+    command: "pnpm run deploy:testnet:sync"
+    options:
+      cache: false
+      interactive: true
+
+  probe-testnet:
+    command: "pnpm run probe:testnet"
+    options:
+      cache: false
+
+  deploy-mainnet:
+    command: "pnpm run deploy:mainnet"
+    options:
+      cache: false
+      interactive: true
+
+  deploy-mainnet-force:
+    command: "pnpm run deploy:mainnet:force"
+    options:
+      cache: false
+      interactive: true

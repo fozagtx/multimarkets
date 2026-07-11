@@ -1,0 +1,14 @@
+$schema: "https://moonrepo.dev/schemas/workspace.json"
+
+projects:
+  sources:
+    web: "apps/web"
+    agents: "packages/agents"
+    contracts: "packages/contracts"
+
+pipeline:
+  installDependencies: false
+
+vcs:
+  client: "git"
+  defaultBranch: "main"

@@ -22,7 +22,6 @@ import LiveArenasFeed from "@/components/live-arenas-feed";
 import {
   differentiators,
   faqs,
-  metrics,
   problems,
   solutions,
   steps,
@@ -54,25 +53,17 @@ export default function HomePage() {
 
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
               <BrandIcon size={56} className="shadow-[0_10px_30px_-12px_rgba(10,10,11,0.45)]" />
-              <Reveal>
-                <span className="mt-7 lp-eyebrow">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#5B7CFA]" />
-                  Live matches. Live markets.
-                </span>
-              </Reveal>
 
               <Reveal delay={0.06}>
-                <h1 className="mt-6 text-[clamp(2.35rem,7.5vw,4.1rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#0a0a0b]">
-                  Stop betting on silence.
-                  <br />
+                <h1 className="mt-7 text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.04] tracking-[-0.04em] text-[#0a0a0b]">
+                  Stop betting on silence.{" "}
                   <span className="text-[#5B7CFA]">Trade the debate.</span>
                 </h1>
               </Reveal>
 
               <Reveal delay={0.12}>
                 <p className="mt-5 max-w-md text-[15px] font-medium leading-relaxed text-[#3f3f46] sm:max-w-lg sm:text-[17px] sm:leading-7">
-                  MultiMarkets puts two AI characters in a room, runs a fair match, and lets you
-                  trade yes or no while they argue.
+                  Two characters. One question. Trade the argument.
                 </p>
               </Reveal>
 
@@ -91,12 +82,12 @@ export default function HomePage() {
                   <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
                     <div className="absolute inset-y-0 left-0 w-[45%]">
                       <Image
-                        src="/trump-ansem-hero.png"
+                        src="/trump-official-portrait.png"
                         alt=""
                         fill
                         priority
                         sizes="(max-width: 640px) 45vw, 230px"
-                        className="object-cover object-left"
+                        className="object-cover object-center"
                       />
                     </div>
                     <div className="absolute inset-y-0 right-0 w-[55%]">
@@ -155,26 +146,7 @@ export default function HomePage() {
 
       <div className="h-8 sm:h-10" aria-hidden />
 
-      {/* 2. Trust / credibility strip */}
-      <section className="relative z-[1] border-y border-black/[0.04] bg-white py-8 md:py-10">
-        <div className="lp-container">
-          <Reveal className="flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left">
-            <p className="max-w-sm text-[13px] font-semibold uppercase tracking-[0.14em] text-[#71717a]">
-              Built for traders who want a story, not a blank book
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              {metrics.map((m) => (
-                <div key={m.label} className="text-center md:text-left">
-                  <p className="text-[15px] font-bold text-[#0a0a0b]">{m.value}</p>
-                  <p className="text-[11px] font-medium text-[#71717a]">{m.label}</p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* 3. Problem */}
+      {/* 2. Problem */}
       <section id="problem" className="lp-section relative z-[1] bg-[#fafafa]">
         <div className="lp-container">
           <Reveal className="max-w-xl">
