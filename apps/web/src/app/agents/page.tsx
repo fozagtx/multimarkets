@@ -222,46 +222,48 @@ export default function AgentsPage() {
                 />
               </label>
 
-              <label className="flex flex-col gap-1">
-                <span className={labelClass}>Personality</span>
-                <input
-                  className={fieldClass}
-                  placeholder="bold, skeptical…"
-                  value={personalityType}
-                  onChange={(e) => setPersonalityType(e.target.value)}
-                />
-              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="flex flex-col gap-1">
+                  <span className={labelClass}>Personality</span>
+                  <input
+                    className={fieldClass}
+                    placeholder="bold, skeptical…"
+                    value={personalityType}
+                    onChange={(e) => setPersonalityType(e.target.value)}
+                  />
+                </label>
 
-              <label className="flex flex-col gap-1">
-                <span className={labelClass}>Traits</span>
-                <input
-                  className={fieldClass}
-                  placeholder="bold, concise"
-                  value={adjectives}
-                  onChange={(e) => setAdjectives(e.target.value)}
-                />
-              </label>
+                <label className="flex flex-col gap-1">
+                  <span className={labelClass}>Traits</span>
+                  <input
+                    className={fieldClass}
+                    placeholder="bold, concise"
+                    value={adjectives}
+                    onChange={(e) => setAdjectives(e.target.value)}
+                  />
+                </label>
 
-              <label className="flex flex-col gap-1">
-                <span className={labelClass}>Topics</span>
-                <input
-                  className={fieldClass}
-                  placeholder="markets, tech, policy"
-                  value={topics}
-                  onChange={(e) => setTopics(e.target.value)}
-                />
-              </label>
+                <label className="flex flex-col gap-1">
+                  <span className={labelClass}>Topics</span>
+                  <input
+                    className={fieldClass}
+                    placeholder="markets, tech, policy"
+                    value={topics}
+                    onChange={(e) => setTopics(e.target.value)}
+                  />
+                </label>
 
-              <label className="flex flex-col gap-1">
-                <span className={labelClass}>Chat style</span>
-                <textarea
-                  className={fieldClass}
-                  rows={2}
-                  placeholder={"Short punchy sentences"}
-                  value={styleChat}
-                  onChange={(e) => setStyleChat(e.target.value)}
-                />
-              </label>
+                <label className="flex flex-col gap-1">
+                  <span className={labelClass}>Chat style</span>
+                  <textarea
+                    className={fieldClass}
+                    rows={2}
+                    placeholder={"Short punchy sentences"}
+                    value={styleChat}
+                    onChange={(e) => setStyleChat(e.target.value)}
+                  />
+                </label>
+              </div>
 
               <button
                 type="button"
