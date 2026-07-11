@@ -4,8 +4,6 @@ import React from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 
-const STORAGE_KEY = "multimarkets-theme";
-
 type ThemeContextValue = {
   theme: ThemeMode;
   resolved: "light" | "dark";
@@ -14,8 +12,9 @@ type ThemeContextValue = {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
-function applyTheme(_resolved: "light" | "dark") {
+function applyLightTheme() {
   // Soft Structuralism UI is light-only — dark class makes text white on white cards
+  if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.classList.remove("dark");
   root.classList.add("light");
@@ -23,35 +22,32 @@ function applyTheme(_resolved: "light" | "dark") {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<ThemeMode>("light");
-  const [resolved] = React.useState<"light" | "dark">("light");
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setThemeState("light");
-    setMounted(true);
-    applyTheme("light");
-    localStorage.setItem(STORAGE_KEY, "light");
-    localStorage.removeItem("multimarkets-theme");
+  // Product stays light; ignore dark/system to prevent white-on-white
+  const setTheme = React.useCallback((theme: ThemeMode) => {
+    void theme;
+    applyLightTheme();
   }, []);
 
-  React.useEffect(() => {
-    if (!mounted) return;
-    applyTheme("light");
-    localStorage.setItem(STORAGE_KEY, "light");
-  }, [theme, mounted]);
-
-  const setTheme = React.useCallback((_value: ThemeMode) => {
-    // Product stays light; ignore dark/system to prevent white-on-white
-    setThemeState("light");
-    applyTheme("light");
+  // Apply once on the client without setState-in-effect
+  React.useLayoutEffect(() => {
+    applyLightTheme();
+    try {
+      localStorage.setItem("multimarkets-theme", "light");
+    } catch {
+      /* ignore */
+    }
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme, resolved, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+  const value = React.useMemo<ThemeContextValue>(
+    () => ({
+      theme: "light",
+      resolved: "light",
+      setTheme,
+    }),
+    [setTheme],
   );
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

@@ -40,8 +40,8 @@ export default function LiveArenasFeed({
       setRooms(r);
       setAgents(a);
       setError(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Cannot reach the agent service");
+    } catch {
+      setError("We couldn’t load matches right now.");
     } finally {
       setLoading(false);
     }
@@ -69,8 +69,10 @@ export default function LiveArenasFeed({
   if (loading) {
     return (
       <div className={cn("lp-bento-shell", className)}>
-        <div className="lp-bento-core py-10 text-center text-[14px] font-medium text-[#71717a]">
-          Loading live rooms…
+        <div className="lp-bento-core space-y-3 p-5 sm:p-6" aria-label="Loading matches">
+          <div className="h-4 w-24 animate-pulse rounded bg-black/[0.05]" />
+          <div className="h-5 w-2/3 animate-pulse rounded bg-black/[0.05]" />
+          <div className="h-4 w-full animate-pulse rounded bg-black/[0.05]" />
         </div>
       </div>
     );
@@ -85,9 +87,9 @@ export default function LiveArenasFeed({
           </span>
           <p className="text-[15px] font-semibold text-[#0a0a0b]">Can’t load live rooms</p>
           <p className="text-[13px] font-medium leading-relaxed text-[#3f3f46]">{error}</p>
-          <p className="text-[12px] font-medium text-[#71717a]">
-            Check your connection and try again in a moment.
-          </p>
+          <button type="button" onClick={() => void refresh()} className="mm-button-secondary h-10 px-3 text-[12px]">
+            Try again
+          </button>
         </div>
       </div>
     );
@@ -98,12 +100,12 @@ export default function LiveArenasFeed({
       <div className={cn("lp-bento-shell", className)}>
         <div className="lp-bento-core flex flex-col items-start gap-4 p-5 sm:p-6">
           <span className="rounded-full bg-[#f4f4f5] px-2.5 py-1 text-[11px] font-semibold text-[#3f3f46]">
-            {agents.length} character{agents.length === 1 ? "" : "s"} ready
+            {agents.length} character{agents.length === 1 ? "" : "s"} available
           </span>
           <p className="text-[16px] font-semibold tracking-tight text-[#0a0a0b]">
             No live arenas yet
           </p>
-          <p className="text-[14px] font-medium leading-relaxed text-[#3f3f46]">
+          <p className="w-full max-w-full break-words whitespace-normal text-[14px] font-medium leading-relaxed text-[#3f3f46]">
             Create a match with two characters to see it here live.
           </p>
           <NextLink href="/create" className="group lp-btn lp-btn-primary">
@@ -125,7 +127,7 @@ export default function LiveArenasFeed({
             Live feed · {shown.length} room{shown.length === 1 ? "" : "s"}
           </p>
           <p className="text-[12px] font-medium text-[#71717a]">
-            {agents.length} characters · refreshes every 6s
+            {agents.length} characters available
           </p>
         </div>
       )}
@@ -134,7 +136,7 @@ export default function LiveArenasFeed({
           <NextLink
             key={room.id}
             href={`/rooms/${room.id}`}
-            className="lp-bento-shell group block transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+            className="mm-card-interactive lp-bento-shell group block"
           >
             <div className="lp-bento-core !p-4">
               <div className="flex items-start justify-between gap-2">

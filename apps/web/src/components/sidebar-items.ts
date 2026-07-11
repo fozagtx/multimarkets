@@ -11,6 +11,12 @@ export const appSidebarItems: SidebarItem[] = [
     title: "Overview",
     items: [
       {
+        key: "dashboard",
+        href: "/dashboard",
+        icon: "solar:home-angle-linear",
+        title: "Dashboard",
+      },
+      {
         key: "markets",
         href: "/markets",
         icon: "solar:chart-2-linear",

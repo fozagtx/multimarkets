@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * Live market panel — buys YES/NO on HashKey testnet PredictionMarket when configured.
- * Addresses from deploy-testnet.sh → apps/web/.env.local
+ * Live market panel — buys YES/NO when a market is available.
  */
 
 import React from "react";
@@ -18,12 +17,11 @@ import { formatUnits, parseUnits, type Address } from "viem";
 import { cn } from "@/lib/cn";
 import { toastError, toastInfo, toastSuccess, toastWarning } from "@/lib/toast";
 import StatusBadge from "@/components/status-badge";
-import { CONTRACTS, OUTCOMES, NETWORK } from "@/lib/config";
+import { CONTRACTS, OUTCOMES } from "@/lib/config";
 import { erc20Abi, predictionMarketAbi } from "@/lib/market-abi";
 
 const OUTCOME_YES = OUTCOMES.YES;
 const OUTCOME_NO = OUTCOMES.NO;
-const FAUCET_URL = NETWORK.faucet;
 
 export type MarketTradePanelProps = {
   question: string;
@@ -59,7 +57,7 @@ export default function MarketTradePanel({
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const onTestnet = chainId === 133;
+  const onSupportedChain = chainId === 133;
 
   const { data: decimals = 6 } = useReadContract({
     address: collateral || undefined,
@@ -93,28 +91,6 @@ export default function MarketTradePanel({
 
   const openForTrade = marketState === 0; // Open
 
-  const mintTestCollateral = async () => {
-    if (!address || !collateral || !publicClient) return;
-    try {
-      setBusy(true);
-      const hash = await writeContractAsync({
-        address: collateral,
-        abi: erc20Abi,
-        functionName: "mint",
-        args: [address, parseUnits("1000", Number(decimals))],
-      });
-      await publicClient.waitForTransactionReceipt({ hash });
-      toastSuccess("Test tokens minted", "1,000 tUSDT added to your wallet");
-    } catch (e) {
-      toastError(
-        "Mint failed",
-        e instanceof Error ? e.message : "Mint only works for testnet USDT",
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const handleTrade = async () => {
     setError(null);
     if (!isConnected || !address) {
@@ -123,16 +99,16 @@ export default function MarketTradePanel({
       toastWarning("Wallet required", msg);
       return;
     }
-    if (!onTestnet) {
-      const msg = "Switch to HashKey Testnet (133). Get HSK from the faucet.";
+    if (!onSupportedChain) {
+      const msg = "Switch to the supported network to trade.";
       setError(msg);
-      toastWarning("Wrong network", msg);
+      toastWarning("Switch network", msg);
       return;
     }
     if (!configured || !market || !collateral || !publicClient) {
-      const msg = "Markets not deployed yet. Run deploy-testnet.sh first.";
+      const msg = "Trading isn’t available for this match yet.";
       setError(msg);
-      toastInfo("Not deployed", msg);
+      toastInfo("Trading unavailable", msg);
       return;
     }
     if (!openForTrade) {
@@ -187,10 +163,10 @@ export default function MarketTradePanel({
       toastSuccess(`Bought ${side}`, `${amount} collateral`);
       void refetchYes();
       void refetchNo();
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Trade failed";
-      setError(msg.slice(0, 180));
-      toastError("Trade failed", msg.slice(0, 120));
+    } catch {
+      const msg = "We couldn’t complete that trade. Check your wallet and try again.";
+      setError(msg);
+      toastError("Trade not completed", msg);
     } finally {
       setBusy(false);
     }
@@ -207,8 +183,8 @@ export default function MarketTradePanel({
       });
       await publicClient.waitForTransactionReceipt({ hash });
       toastSuccess("Claimed", "Payout sent to your wallet");
-    } catch (e) {
-      toastError("Claim failed", e instanceof Error ? e.message : "Try again");
+    } catch {
+      toastError("Couldn’t claim payout", "Try again in a moment.");
     } finally {
       setBusy(false);
     }
@@ -231,7 +207,7 @@ export default function MarketTradePanel({
 
       {!configured && (
         <p className="mb-3 rounded-xl bg-[#fffbeb] px-3 py-2 text-[11px] font-medium text-[#92400e]">
-          Contracts not configured. Deploy testnet and restart the app.
+          Trading isn’t available for this match yet.
         </p>
       )}
 
@@ -240,7 +216,7 @@ export default function MarketTradePanel({
           type="button"
           onClick={() => setSide("YES")}
           className={cn(
-            "rounded-xl border px-3 py-2.5 text-left transition-colors",
+            "rounded-xl border px-3 py-2.5 text-left transition-[transform,background-color,border-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2",
             side === "YES"
               ? "border-emerald-300 bg-emerald-50"
               : "border-black/[0.06] bg-[#f4f4f5] hover:bg-[#eee]",
@@ -257,7 +233,7 @@ export default function MarketTradePanel({
           type="button"
           onClick={() => setSide("NO")}
           className={cn(
-            "rounded-xl border px-3 py-2.5 text-left transition-colors",
+            "rounded-xl border px-3 py-2.5 text-left transition-[transform,background-color,border-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2",
             side === "NO"
               ? "border-red-300 bg-red-50"
               : "border-black/[0.06] bg-[#f4f4f5] hover:bg-[#eee]",
@@ -273,14 +249,15 @@ export default function MarketTradePanel({
       </div>
 
       <label className="mb-3 flex flex-col gap-1">
-        <span className="text-[11px] font-semibold text-[#52525b]">Amount (test USDT)</span>
+        <span className="text-[11px] font-semibold text-[#52525b]">Amount</span>
         <input
           type="number"
           min={0}
           step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="h-10 rounded-xl border border-black/[0.08] bg-white px-3 text-[13px] font-semibold text-[#0a0a0b] outline-none focus:border-[#5B7CFA]/40"
+          inputMode="decimal"
+          className="h-10 rounded-xl border border-black/[0.08] bg-white px-3 text-[13px] font-semibold text-[#0a0a0b] outline-none focus:border-[#5B7CFA]/40 focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/40 focus-visible:ring-offset-2"
         />
       </label>
 
@@ -289,22 +266,12 @@ export default function MarketTradePanel({
           type="button"
           disabled={busy || !configured}
           onClick={() => void handleTrade()}
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[13px] font-semibold text-white transition-colors hover:bg-[#18181b] disabled:opacity-50"
+          className="mm-button-primary h-10 w-full gap-2 text-[13px] disabled:opacity-50"
+          aria-busy={busy}
         >
           <Icon icon="solar:chart-2-bold" width={16} className="text-white" />
           <span className="text-white">{busy ? "Working…" : `Buy ${side}`}</span>
         </button>
-
-        {configured && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => void mintTestCollateral()}
-            className="inline-flex h-9 w-full items-center justify-center rounded-full border border-black/[0.08] bg-[#f4f4f5] text-[12px] font-semibold text-[#0a0a0b] hover:bg-white disabled:opacity-50"
-          >
-            Get testnet USDT
-          </button>
-        )}
 
         {marketState === 2 || marketState === 3 ? (
           <button
@@ -322,15 +289,7 @@ export default function MarketTradePanel({
         <p className="mt-2 rounded-xl bg-[#fef2f2] px-3 py-2 text-[11px] font-medium text-[#b91c1c]">
           {error}
         </p>
-      ) : (
-        <p className="mt-2 text-[11px] font-medium leading-relaxed text-[#71717a]">
-          Testnet only. Gas:{" "}
-          <a href={FAUCET_URL} target="_blank" rel="noreferrer" className="underline">
-            HSK faucet
-          </a>
-          . YES = 0, NO = 1.
-        </p>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -20,7 +20,7 @@ import PromptContainerWithConversation from "@/components/ai/prompt-container-wi
 import ArenaControls from "@/components/ai/arena-controls";
 import MarketTradePanel from "@/components/market-trade-panel";
 import StatusBadge from "@/components/status-badge";
-import { toastError, toastInfo, toastSuccess, toastWarning } from "@/lib/toast";
+import { toastError, toastInfo, toastSuccess } from "@/lib/toast";
 
 export default function RoomDetailPage() {
   const params = useParams<{ id: string }>();
@@ -30,11 +30,6 @@ export default function RoomDetailPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [starting, setStarting] = React.useState(false);
   const [mode, setMode] = React.useState("live");
-  const [temperature, setTemperature] = React.useState(0.55);
-  const [maxTurnsHint, setMaxTurnsHint] = React.useState(12);
-  const [systemHint, setSystemHint] = React.useState(
-    "You are a neutral referee. Keep the match fair, on topic, and ready for a clear yes/no finish.",
-  );
   const [controlsOpen, setControlsOpen] = React.useState(false);
   const bottomRef = React.useRef<HTMLDivElement>(null);
 
@@ -42,7 +37,7 @@ export default function RoomDetailPage() {
     const data = await getRoom(roomId);
     setRoom(data);
     setMessages(data.messages ?? []);
-    if (data.error) setError(data.error);
+    if (data.error) setError("This match is unavailable right now.");
     return data;
   }, [roomId]);
 
@@ -51,8 +46,8 @@ export default function RoomDetailPage() {
     (async () => {
       try {
         await load();
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load room");
+      } catch {
+        if (!cancelled) setError("We couldn’t load this match right now.");
       }
     })();
     return () => {
@@ -92,7 +87,7 @@ export default function RoomDetailPage() {
               prev ? { ...prev, status: session.status as RoomSession["status"] } : prev,
             );
           }
-          if (session.error) setError(session.error);
+          if (session.error) setError("This match needs attention. Try again in a moment.");
           return;
         }
         if (parsed.type === "debate_start") {
@@ -150,14 +145,14 @@ export default function RoomDetailPage() {
                 }
               : prev,
           );
-          toastSuccess(`Market settled: ${outcome}`, s.rationale ?? s.summary);
+          toastSuccess(`Result: ${outcome}`, s.rationale ?? s.summary);
           return;
         }
         if (parsed.type === "error" && parsed.data) {
           const d = parsed.data as { message?: string };
           if (d.message) {
-            setError(d.message);
-            toastError("Arena error", d.message);
+            setError("This match needs attention. Try again in a moment.");
+            toastError("Match paused", "Try again in a moment.");
           }
           setRoom((prev) => (prev ? { ...prev, status: "failed" } : prev));
           return;
@@ -203,10 +198,6 @@ export default function RoomDetailPage() {
     return () => es.close();
   }, [roomId]);
 
-  React.useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
-
   const onStart = async () => {
     setError(null);
     try {
@@ -215,21 +206,11 @@ export default function RoomDetailPage() {
       const next = await startRoom(roomId);
       setRoom(next);
       toastSuccess("Debate live", "You can follow the transcript and trade when ready.");
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Failed to start debate";
+    } catch {
+      const msg = "The match couldn’t start. Try again in a moment.";
       setError(msg);
       setRoom((prev) => (prev ? { ...prev, status: "failed" } : prev));
-      toastError("Debate failed to start", msg);
-      if (
-        msg.toLowerCase().includes("api key") ||
-        msg.toLowerCase().includes("llm") ||
-        msg.toLowerCase().includes("missing")
-      ) {
-        toastWarning(
-          "Match couldn’t start",
-          "The room isn’t ready to generate replies yet. Try again in a moment.",
-        );
-      }
+      toastError("Match couldn’t start", msg);
     } finally {
       setStarting(false);
     }
@@ -247,8 +228,11 @@ export default function RoomDetailPage() {
   if (error && !room) {
     return (
       <div className="mx-auto w-full max-w-lg space-y-3">
-        <div className="rounded-2xl border border-[#fecaca] bg-[#fef2f2] p-4 text-[13px] font-medium text-[#b91c1c]">
-          {error}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#fecaca] bg-[#fef2f2] p-4 text-[13px] font-medium text-[#b91c1c]">
+          <span>{error}</span>
+          <button type="button" onClick={() => void load().catch(() => undefined)} className="font-semibold underline underline-offset-2">
+            Try again
+          </button>
         </div>
         <NextLink
           href="/rooms"
@@ -272,15 +256,7 @@ export default function RoomDetailPage() {
     room.status === "ended" || room.status === "settled" || room.status === "debate_ended";
 
   const controls = (
-    <ArenaControls
-      room={room}
-      temperature={temperature}
-      onTemperatureChange={setTemperature}
-      maxTurnsHint={maxTurnsHint}
-      onMaxTurnsHintChange={setMaxTurnsHint}
-      systemHint={systemHint}
-      onSystemHintChange={setSystemHint}
-    />
+    <ArenaControls room={room} />
   );
 
   return (
@@ -297,7 +273,7 @@ export default function RoomDetailPage() {
             {isLive && (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#d1fae5] px-2.5 py-0.5 text-[11px] font-semibold text-[#065f46]">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#059669]" />
-                Streaming
+                Live
               </span>
             )}
           </div>
@@ -316,29 +292,32 @@ export default function RoomDetailPage() {
         <div className="flex flex-wrap items-center gap-2">
           <NextLink
             href="/rooms"
-            className="inline-flex h-9 items-center rounded-full border border-black/[0.08] bg-white px-3.5 text-[12px] font-semibold text-[#0a0a0b] hover:bg-[#fafafa]"
+            className="mm-button-secondary h-10 px-3.5 text-[12px]"
           >
             Arenas
           </NextLink>
           <NextLink
             href="/markets"
-            className="inline-flex h-9 items-center rounded-full border border-black/[0.08] bg-white px-3.5 text-[12px] font-semibold text-[#0a0a0b] hover:bg-[#fafafa]"
+            className="mm-button-secondary h-10 px-3.5 text-[12px]"
           >
             Markets
           </NextLink>
           <button
             type="button"
-            className="inline-flex h-9 items-center rounded-full border border-black/[0.08] bg-white px-3.5 text-[12px] font-semibold text-[#0a0a0b] lg:hidden"
+            className="mm-button-secondary h-10 px-3.5 text-[12px] lg:hidden"
             onClick={() => setControlsOpen((v) => !v)}
+            aria-expanded={controlsOpen}
+            aria-controls="match-activity"
           >
-            Controls
+            Match activity
           </button>
           {canStart && (
             <button
               type="button"
               disabled={starting}
               onClick={() => void onStart()}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#0a0a0b] px-4 text-[12px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
+              className="mm-button-primary h-10 gap-1.5 px-4 text-[12px] disabled:opacity-50"
+              aria-busy={starting}
             >
               <Icon icon="solar:play-bold" width={14} className="text-white" />
               <span className="text-white">{starting ? "Starting…" : "Start debate"}</span>
@@ -348,15 +327,20 @@ export default function RoomDetailPage() {
       </header>
 
       {error && (
-        <div className="mb-4 rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
+          <div>
           <p className="font-semibold">Something went wrong</p>
-          <p className="mt-0.5">{error}</p>
+            <p className="mt-0.5">Try again in a moment.</p>
+          </div>
+          <button type="button" onClick={() => void load().catch(() => undefined)} className="font-semibold underline underline-offset-2">
+            Try again
+          </button>
         </div>
       )}
 
       {/* Mobile controls drawer */}
       {controlsOpen && (
-        <div className="mb-4 rounded-2xl border border-black/[0.06] bg-white p-4 lg:hidden">
+        <div id="match-activity" className="mb-4 rounded-2xl border border-black/[0.06] bg-white p-4 lg:hidden">
           {controls}
         </div>
       )}
@@ -372,7 +356,6 @@ export default function RoomDetailPage() {
         <section className="lg:col-span-6">
           <PromptContainerWithConversation
             className="max-w-full"
-            scrollShadowClassname="h-[min(52vh,520px)]"
             title={room.topic}
             messages={messages}
             mode={mode}
@@ -414,7 +397,7 @@ export default function RoomDetailPage() {
             </ol>
             <NextLink
               href="/create"
-              className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-full border border-black/[0.08] bg-[#f4f4f5] text-[12px] font-semibold text-[#0a0a0b] hover:bg-white"
+              className="mm-button-secondary mt-3 h-10 w-full text-[12px]"
             >
               Create another
             </NextLink>

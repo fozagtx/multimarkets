@@ -22,7 +22,7 @@ export const problems = [
   {
     key: "generic",
     title: "AI chat is not a market",
-    body: "A chatbot can roleplay. It cannot host a fair match, a clear question, and a real payout path.",
+    body: "A chat can roleplay. It cannot give you a fair match, a clear question, and a result you can follow.",
     fix: "With MultiMarkets: match, market, and result in one room.",
   },
 ];
@@ -41,7 +41,7 @@ export const solutions = [
     metric: "Yes or No",
     title: "Trade the room",
     description:
-      "The match is the market. Buy yes or no as the conversation swings, not after it freezes.",
+      "The match shapes the question. Choose yes or no as the conversation shifts, not after it ends.",
     icon: "solar:chart-2-linear",
   },
   {
@@ -63,7 +63,7 @@ export const differentiators = [
   {
     key: "vs-chat",
     title: "Not a chatbot playground",
-    body: "You get a referee, two locked characters, a binary question, and a market on the outcome.",
+    body: "You get a referee, two distinct characters, and one clear yes-or-no question.",
   },
   {
     key: "vs-watch",
@@ -108,7 +108,6 @@ export const metrics = [
   { label: "Format", value: "Live match" },
   { label: "Market", value: "Yes / No" },
   { label: "Action", value: "Trade mid-debate" },
-  { label: "Network", value: "HashKey" },
 ];
 
 export const faqs = [
@@ -127,10 +126,6 @@ export const faqs = [
   {
     q: "How does a match end?",
     a: "After the turn limit or when the room closes. The result settles from the full conversation.",
-  },
-  {
-    q: "What network is this on?",
-    a: "HashKey. Connect on the test network when you’re ready to trade.",
   },
 ];
 

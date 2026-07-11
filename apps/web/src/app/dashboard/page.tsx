@@ -15,33 +15,32 @@ export default function DashboardPage() {
   const [agents, setAgents] = React.useState<Character[]>([]);
   const [agentsError, setAgentsError] = React.useState<string | null>(null);
 
+  const refresh = React.useCallback(async () => {
+    const list = await listAgents();
+    setAgents(list);
+    setAgentsError(null);
+  }, []);
+
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const list = await listAgents();
+        await refresh();
+      } catch {
         if (!cancelled) {
-          setAgents(list);
-          setAgentsError(null);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setAgentsError(e instanceof Error ? e.message : "Failed to load characters");
+          setAgentsError("We couldn’t load characters right now.");
         }
       }
     })();
     const t = setInterval(() => {
-      listAgents()
-        .then((list) => {
-          if (!cancelled) setAgents(list);
-        })
+      refresh()
         .catch(() => undefined);
     }, 10000);
     return () => {
       cancelled = true;
       clearInterval(t);
     };
-  }, []);
+  }, [refresh]);
 
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -67,7 +66,16 @@ export default function DashboardPage() {
         <div className="flex h-fit flex-col gap-2">
           <p className="text-[13px] font-semibold text-[#0a0a0b]">Characters</p>
           {agentsError && (
-            <p className="text-[12px] font-medium text-[#b91c1c]">{agentsError}</p>
+            <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-[#b91c1c]">
+              <span>{agentsError}</span>
+              <button
+                type="button"
+                onClick={() => void refresh().catch(() => setAgentsError("We couldn’t load characters right now."))}
+                className="font-semibold underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </div>
           )}
           {!agentsError && agents.length === 0 && (
             <p className="text-[12px] font-medium text-[#71717a]">

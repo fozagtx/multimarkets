@@ -27,7 +27,7 @@ const modes = [
   { key: "settlement", label: "Result" },
 ] as const;
 
-/** Compact chat column — Soft Structuralism */
+/** Compact chat column — fixed-height feed, scrolls inside the box */
 export default function PromptContainerWithConversation({
   className,
   scrollShadowClassname,
@@ -49,25 +49,58 @@ export default function PromptContainerWithConversation({
         ? messages.filter((m) => m.role === "persona")
         : messages;
 
+  const feedRef = React.useRef<HTMLDivElement>(null);
+  const shouldFollowRef = React.useRef(true);
+  const [hasUnseenMessages, setHasUnseenMessages] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+    if (shouldFollowRef.current) {
+      el.scrollTop = el.scrollHeight;
+      setHasUnseenMessages(false);
+    } else {
+      setHasUnseenMessages(true);
+    }
+  }, [filtered.length]);
+
+  const updateFollowState = () => {
+    const el = feedRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+    shouldFollowRef.current = atBottom;
+    if (atBottom) setHasUnseenMessages(false);
+  };
+
+  const jumpToLatest = () => {
+    const el = feedRef.current;
+    if (!el) return;
+    shouldFollowRef.current = true;
+    el.scrollTop = el.scrollHeight;
+    setHasUnseenMessages(false);
+  };
+
   return (
     <div
       className={cn(
-        "flex h-full w-full max-w-full flex-col gap-3 rounded-2xl border border-black/[0.06] bg-white p-3 shadow-[0_12px_40px_-16px_rgba(20,20,43,0.12)] sm:p-4",
+        "relative flex h-[min(70vh,640px)] w-full max-w-full flex-col gap-3 overflow-hidden rounded-2xl border border-black/[0.06] bg-white p-3 shadow-[0_12px_40px_-16px_rgba(20,20,43,0.12)] sm:p-4",
         className,
       )}
     >
-      <div className="flex flex-col gap-2 border-b border-black/[0.06] pb-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex shrink-0 flex-col gap-2 border-b border-black/[0.06] pb-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="line-clamp-2 text-[14px] font-semibold tracking-tight text-[#0a0a0b]">
           {title}
         </p>
-        <div className="flex shrink-0 rounded-full bg-[#f4f4f5] p-0.5">
+        <div role="tablist" aria-label="Conversation view" className="flex shrink-0 rounded-full bg-[#f4f4f5] p-0.5">
           {modes.map((m) => (
             <button
               key={m.key}
               type="button"
               onClick={() => onModeChange(m.key)}
+              role="tab"
+              aria-selected={mode === m.key}
               className={cn(
-                "rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors",
+                "rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2",
                 mode === m.key
                   ? "bg-[#0a0a0b] text-white"
                   : "text-[#52525b] hover:text-[#0a0a0b]",
@@ -80,8 +113,10 @@ export default function PromptContainerWithConversation({
       </div>
 
       <div
+        ref={feedRef}
+        onScroll={updateFollowState}
         className={cn(
-          "min-h-[240px] flex-1 overflow-y-auto pr-1",
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1",
           scrollShadowClassname,
         )}
       >
@@ -89,7 +124,17 @@ export default function PromptContainerWithConversation({
         <div ref={bottomRef} />
       </div>
 
-      <div className="flex flex-col gap-1.5 border-t border-black/[0.06] pt-3">
+      {hasUnseenMessages && (
+        <button
+          type="button"
+          onClick={jumpToLatest}
+          className="absolute bottom-28 left-1/2 inline-flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-[#0a0a0b] px-3 text-[11px] font-semibold text-white shadow-lg transition-transform duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2"
+        >
+          <span className="text-white">New messages</span>
+        </button>
+      )}
+
+      <div className="flex shrink-0 flex-col gap-1.5 border-t border-black/[0.06] pt-3">
         <PromptInputWithBottomActions
           onSubmitNote={onSubmitNote}
           onStartDebate={onStartDebate}

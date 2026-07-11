@@ -92,8 +92,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
 
     const failedMessage = (
       <p>
-        Something went wrong generating this turn. Retry from the arena controls or check agent
-        health.{" "}
+        That reply didn’t arrive. Try starting a new match.{" "}
         <Link href="/create" size="sm">
           Open a new arena
         </Link>
@@ -137,7 +136,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
                   role === "system" && "bg-[#f4f4f5] text-[#71717a]",
                 )}
               >
-                {role}
+                {role === "master" ? "referee" : role}
               </span>
               {timestamp && (
                 <span className="text-[10px] font-medium text-[#a1a1aa]">
@@ -155,13 +154,13 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
               messageClassName,
             )}
           >
-            <div ref={messageRef} className="pr-10 text-[13px] font-medium leading-relaxed whitespace-pre-line text-inherit">
+            <div ref={messageRef} className="text-[13px] font-medium leading-relaxed whitespace-pre-line text-inherit">
               {hasFailed ? failedMessage : message}
             </div>
 
             {showFeedback && !hasFailed && (
-              <div className="absolute right-2 top-2 flex rounded-full bg-content2 shadow-small">
-                <Button isIconOnly radius="full" size="sm" variant="light" onPress={handleCopy}>
+              <div className="mt-2 flex justify-end rounded-full bg-content2 shadow-small">
+                <Button isIconOnly radius="full" size="md" variant="light" aria-label="Copy message" onPress={handleCopy}>
                   {copied ? (
                     <Icon className="text-lg text-default-600" icon="gravity-ui:check" />
                   ) : (
@@ -172,8 +171,9 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
                   <Button
                     isIconOnly
                     radius="full"
-                    size="sm"
+                    size="md"
                     variant="light"
+                    aria-label="Mark message useful"
                     onPress={() => handleFeedback(true)}
                   >
                     {feedback === "like" ? (
@@ -187,8 +187,9 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
                   <Button
                     isIconOnly
                     radius="full"
-                    size="sm"
+                    size="md"
                     variant="light"
+                    aria-label="Mark message not useful"
                     onPress={() => handleFeedback(false)}
                   >
                     {feedback === "dislike" ? (
@@ -209,9 +210,11 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
                 <button
                   type="button"
                   onClick={() => onAttemptChange?.(currentAttempt > 1 ? currentAttempt - 1 : 1)}
+                  aria-label="Show previous version"
+                  className="flex h-10 w-10 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   <Icon
-                    className="cursor-pointer text-default-400 hover:text-default-500"
+                    className="text-default-400 hover:text-default-500"
                     icon="gravity-ui:circle-arrow-left"
                   />
                 </button>
@@ -220,9 +223,11 @@ const MessageCard = React.forwardRef<HTMLDivElement, AiMessageCardProps>(
                   onClick={() =>
                     onAttemptChange?.(currentAttempt < attempts ? currentAttempt + 1 : attempts)
                   }
+                  aria-label="Show next version"
+                  className="flex h-10 w-10 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   <Icon
-                    className="cursor-pointer text-default-400 hover:text-default-500"
+                    className="text-default-400 hover:text-default-500"
                     icon="gravity-ui:circle-arrow-right"
                   />
                 </button>

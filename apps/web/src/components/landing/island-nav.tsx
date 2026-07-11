@@ -53,7 +53,7 @@ const IslandNav = React.forwardRef<HTMLElement>(function IslandNav(_, ref) {
               <NextLink
                 key={l.href}
                 href={l.href}
-                className="rounded-full px-3 py-1.5 text-[13px] font-medium text-[#3f3f46] transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-black/[0.04] hover:text-[#0a0a0b]"
+                className="rounded-full px-3 py-1.5 text-[13px] font-medium text-[#3f3f46] transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-black/[0.04] hover:text-[#0a0a0b]"
               >
                 {l.name}
               </NextLink>
@@ -74,13 +74,13 @@ const IslandNav = React.forwardRef<HTMLElement>(function IslandNav(_, ref) {
               <span className="sr-only">Menu</span>
               <span
                 className={cn(
-                  "absolute h-[1.5px] w-4 bg-[#0a0a0b] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  "absolute h-[1.5px] w-4 bg-[#0a0a0b] transition-transform duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]",
                   open ? "translate-y-0 rotate-45" : "-translate-y-[3.5px]",
                 )}
               />
               <span
                 className={cn(
-                  "absolute h-[1.5px] w-4 bg-[#0a0a0b] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  "absolute h-[1.5px] w-4 bg-[#0a0a0b] transition-transform duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]",
                   open ? "translate-y-0 -rotate-45" : "translate-y-[3.5px]",
                 )}
               />

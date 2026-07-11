@@ -18,7 +18,7 @@ const LandingFooter = React.forwardRef<HTMLElement>(function LandingFooter(_, re
               </span>
             </NextLink>
             <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[#3f3f46]">
-              Trade the debate. Live characters. Live markets. Built on HashKey.
+              Follow the argument. Choose a side. See how the match ends.
             </p>
             <NextLink href="/create" className="group lp-btn lp-btn-primary mt-6">
               Create match

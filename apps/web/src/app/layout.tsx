@@ -14,7 +14,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "MultiMarkets — Stop betting on silence. Trade the debate.",
   description:
-    "Two AI characters argue live. You trade yes or no while the match is still going. Built on HashKey.",
+    "Two characters argue live. Follow the match, choose a side, and see how it ends.",
   icons: {
     icon: [
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },

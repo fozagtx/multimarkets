@@ -169,7 +169,7 @@ export interface LlmConfig {
   apiKey: string;
   baseUrl: string;
   model: string;
-  provider: "openrouter" | "xai" | "openai";
+  provider: "openrouter";
   /** Extra headers (OpenRouter HTTP-Referer / X-Title, etc.) */
   headers?: Record<string, string>;
 }

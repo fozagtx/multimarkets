@@ -69,7 +69,7 @@ packages/agents/
 See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success criteria (SC-1…SC-10), and failure modes.
 
 - Node.js ≥ 20
-- LLM credentials required for debates (`OPENROUTER_API_KEY` preferred)
+- LLM credentials required for debates (`OPENROUTER_API_KEY`)
 - Fighters are registered via `POST /agents` — only `master.json` ships on disk
 - Smoke: `npm run smoke` against a running server
 
@@ -77,14 +77,11 @@ See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success crit
 
 | Variable | Required | Description |
 |---|---|---|
-| `OPENROUTER_API_KEY` | one of keys | **Preferred** OpenRouter key (`https://openrouter.ai/api/v1`) |
+| `OPENROUTER_API_KEY` | **yes** | OpenRouter key (`https://openrouter.ai/api/v1`) |
 | `OPENROUTER_MODEL` | no | Default `openai/gpt-4o-mini` |
-| `XAI_API_KEY` | one of keys | Grok via `https://api.x.ai/v1` |
-| `OPENAI_API_KEY` | one of keys | OpenAI-compatible fallback |
-| `LLM_PROVIDER` | no | Force `openrouter` \| `xai` \| `openai` |
-| `XAI_BASE_URL` / `OPENAI_BASE_URL` / `OPENROUTER_BASE_URL` | no | Override base URLs |
-| `XAI_MODEL` / `OPENAI_MODEL` / `LLM_MODEL` | no | Model id overrides |
-| `SETTLEMENT_HMAC_SECRET` | recommended | HMAC secret for settlement signatures (falls back to LLM key) |
+| `OPENROUTER_BASE_URL` | no | Default `https://openrouter.ai/api/v1` |
+| `LLM_MODEL` | no | Optional model override |
+| `SETTLEMENT_HMAC_SECRET` | recommended | HMAC secret for settlement signatures (falls back to OpenRouter key) |
 | `HSP_COORDINATOR_URL` | when using HSP | Base URL for agent fee settlement |
 | `HSP_API_KEY` | no | Bearer token for HSP coordinator |
 | `HASHKEY_RPC_URL` / `APRO_RPC_URL` | for HashKey oracle | JSON-RPC endpoint |
@@ -140,7 +137,7 @@ curl -N localhost:8787/rooms/<ROOM_ID>/stream
 ```bash
 cd packages/agents
 pnpm install   # or npm install / yarn
-export XAI_API_KEY=...   # or OPENAI_API_KEY
+export OPENROUTER_API_KEY=...
 pnpm dev       # tsx watch src/server.ts
 # production:
 pnpm build && pnpm start

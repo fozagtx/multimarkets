@@ -1,20 +1,13 @@
 "use client";
 
 /**
- * Design ProMax: Layouts (2)__App + sidebars (19)
- * Collapse next to brand; expand at TOP when compact (not buried under wallet)
+ * App sidebar — brand, nav, wallet. Collapse chrome removed from desktop.
  */
 
 import React from "react";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Button,
-  ScrollShadow,
-  Spacer,
-  Tooltip,
-  cn,
-} from "@heroui/react";
+import { ScrollShadow, Spacer, cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 import BrandIcon from "@/components/brand-icon";
@@ -24,7 +17,6 @@ import { WalletConnectHeader } from "@/components/wallet-connect";
 
 export type AppSidebarProps = {
   isCompact?: boolean;
-  onToggle?: () => void;
   onNavigate?: () => void;
   isMobileDrawer?: boolean;
   className?: string;
@@ -32,7 +24,6 @@ export type AppSidebarProps = {
 
 export default function AppSidebar({
   isCompact = false,
-  onToggle,
   onNavigate,
   isMobileDrawer = false,
   className,
@@ -41,15 +32,16 @@ export default function AppSidebar({
   const router = useRouter();
 
   const selectedKey = React.useMemo(() => {
+    if (pathname.startsWith("/dashboard")) return "dashboard";
     if (pathname.startsWith("/rooms")) return "rooms";
     if (pathname.startsWith("/markets")) return "markets";
     if (pathname.startsWith("/agents")) return "agents";
     if (pathname.startsWith("/create")) return "create";
-    if (pathname.startsWith("/dashboard")) return "markets";
-    return "markets";
+    return "dashboard";
   }, [pathname]);
 
   const hrefByKey: Record<string, string> = {
+    dashboard: "/dashboard",
     markets: "/markets",
     rooms: "/rooms",
     agents: "/agents",
@@ -59,7 +51,7 @@ export default function AppSidebar({
   return (
     <div
       className={cn(
-        "relative flex h-full w-72 flex-col border-r border-divider bg-content1 p-6 transition-[width,padding] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+        "relative flex h-full w-72 flex-col border-r border-black/[0.06] bg-white p-6",
         {
           "w-[83px] items-center px-[6px] py-6": isCompact,
         },
@@ -95,16 +87,13 @@ export default function AppSidebar({
           </span>
         </div>
 
-        {/* Expanded: collapse / close */}
-        {!isCompact && (onToggle || onNavigate) && (
+        {/* Expanded: close only on mobile drawer */}
+        {!isCompact && isMobileDrawer && onNavigate && (
           <button
             type="button"
-            aria-label={isMobileDrawer ? "Close menu" : "Collapse sidebar"}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-default-500 transition-colors hover:bg-default-100 hover:text-foreground"
-            onClick={() => {
-              if (isMobileDrawer) onNavigate?.();
-              else onToggle?.();
-            }}
+            aria-label="Close menu"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-default-500 transition-colors hover:bg-default-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2"
+            onClick={() => onNavigate()}
           >
             <Icon
               className="[&>g]:stroke-[1px]"
@@ -112,28 +101,6 @@ export default function AppSidebar({
               width={24}
             />
           </button>
-        )}
-
-        {/* Compact: large expand at TOP (ProMax) */}
-        {isCompact && onToggle && (
-          <Tooltip content="Expand sidebar" placement="right">
-            <Button
-              isIconOnly
-              className="h-11 w-11 min-w-11 text-default-600"
-              size="sm"
-              variant="flat"
-              radius="full"
-              onPress={onToggle}
-              aria-label="Expand sidebar"
-            >
-              <Icon
-                className="[&>g]:stroke-[1px]"
-                height={24}
-                icon="solar:round-alt-arrow-right-line-duotone"
-                width={24}
-              />
-            </Button>
-          </Tooltip>
         )}
       </div>
 

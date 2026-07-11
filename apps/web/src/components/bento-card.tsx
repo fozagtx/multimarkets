@@ -58,7 +58,7 @@ const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
           </div>
           {featured && (
             <div className="mt-auto flex flex-col gap-2">
-              {["Eliza character files", "Master turn control", "Live SSE stream"].map((line) => (
+              {["Distinct character voices", "A fair referee", "Every turn in one place"].map((line) => (
                 <div
                   key={line}
                   className="flex min-h-[44px] items-center rounded-medium bg-content3 px-3 py-2 text-content3-foreground"

@@ -176,7 +176,7 @@ export function createApp(): Hono {
         ready: false,
         masterLoaded: master,
         llm: { configured: llm.configured, error: llm.error ?? null },
-        hint: "Set OPENROUTER_API_KEY (or XAI_API_KEY / OPENAI_API_KEY) and ensure characters/master.json loads.",
+        hint: "Set OPENROUTER_API_KEY and ensure characters/master.json loads.",
       },
       503,
     );
@@ -350,7 +350,7 @@ export function createApp(): Hono {
         return c.json(
           {
             error:
-              "Debate cannot start: no language model key configured. Set OPENROUTER_API_KEY (preferred), XAI_API_KEY, or OPENAI_API_KEY on the agents server.",
+              "Debate cannot start: no language model key configured. Set OPENROUTER_API_KEY on the agents server.",
             code: "LLM_NOT_CONFIGURED",
           },
           503,

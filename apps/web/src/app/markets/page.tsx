@@ -29,8 +29,8 @@ export default function MarketsPage() {
       try {
         setLoading(true);
         await refresh();
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load markets");
+      } catch {
+        if (!cancelled) setError("We couldn’t load matches right now.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -70,16 +70,30 @@ export default function MarketsPage() {
 
       {!marketsLive && (
         <div className="mb-4 rounded-2xl border border-black/[0.06] bg-[#f4f4f5] px-4 py-3 text-[13px] font-medium text-[#52525b]">
-          On-chain markets not set in config. You can still create and watch debates.
+          Trading will open when each match is ready. You can still create and follow matches.
         </div>
       )}
 
       {loading && (
-        <p className="text-[14px] font-medium text-[#52525b]">Loading markets…</p>
+        <div className="grid gap-3 sm:grid-cols-2" aria-label="Loading matches">
+          {[0, 1, 2, 3].map((index) => (
+            <div
+              key={index}
+              className="h-36 animate-pulse rounded-2xl border border-black/[0.06] bg-white"
+            />
+          ))}
+        </div>
       )}
       {error && (
-        <div className="rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
-          {error}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => void refresh().then(() => setError(null)).catch(() => undefined)}
+            className="mm-button-secondary h-9 px-3 text-[12px]"
+          >
+            Try again
+          </button>
         </div>
       )}
 
@@ -90,7 +104,7 @@ export default function MarketsPage() {
           </span>
           <p className="mt-4 text-[14px] font-semibold text-[#0a0a0b]">No markets yet</p>
           <p className="mt-1 text-[13px] font-medium text-[#71717a]">
-            Create a match with two characters to open a market.
+            Create a match with two characters to start the conversation.
           </p>
         </div>
       )}
@@ -100,7 +114,7 @@ export default function MarketsPage() {
           <NextLink
             key={room.id}
             href={`/rooms/${room.id}`}
-            className="lp-bento-shell group block transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+            className="mm-card-interactive lp-bento-shell group block"
           >
             <div className="lp-bento-core flex h-full flex-col gap-3 !p-4">
               <div className="flex items-start justify-between gap-2">

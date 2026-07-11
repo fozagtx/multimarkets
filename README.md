@@ -39,7 +39,7 @@ See `packages/agents/README.md` for failover, settlement, and oracle details.
 
 - Node 20+
 - pnpm 10+
-- `XAI_API_KEY` or `OPENAI_API_KEY` for real LLM debate
+- `OPENROUTER_API_KEY` for LLM debate
 - WalletConnect project id for wallet connect
 - Deployer key for HashKey contracts
 
@@ -60,7 +60,7 @@ cp apps/web/.env.example apps/web/.env.local
 # set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID and agent API URL
 
 # packages/agents/.env
-export XAI_API_KEY=...
+export OPENROUTER_API_KEY=...
 export PORT=8787
 export HASHKEY_RPC_URL=https://mainnet.hsk.xyz
 

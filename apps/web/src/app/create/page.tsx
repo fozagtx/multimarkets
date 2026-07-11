@@ -34,30 +34,33 @@ export default function CreatePage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  const loadAgents = React.useCallback(async () => {
+    setLoadingAgents(true);
+    const list = await listAgents();
+    setAgents(list);
+    const defaults = pickDefaults(list);
+    setAgentAId(defaults.a);
+    setAgentBId(defaults.b);
+    setError(null);
+    setLoadingAgents(false);
+  }, []);
+
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        setLoadingAgents(true);
-        const list = await listAgents();
+        await loadAgents();
+      } catch {
         if (!cancelled) {
-          setAgents(list);
-          const d = pickDefaults(list);
-          setAgentAId(d.a);
-          setAgentBId(d.b);
+          setError("We couldn’t load characters right now.");
+          setLoadingAgents(false);
         }
-      } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Failed to load agents");
-        }
-      } finally {
-        if (!cancelled) setLoadingAgents(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadAgents]);
 
   const agentA = agents.find((a) => a.id === agentAId);
   const agentB = agents.find((a) => a.id === agentBId);
@@ -99,12 +102,12 @@ export default function CreatePage() {
       toastSuccess(
         autoStart ? "Debate started" : "Arena ready",
         autoStart
-          ? "Master is running turns. Streaming live."
-          : "Press Start when you are ready.",
+          ? "The match has started. Follow it as each turn arrives."
+          : "Start the match when you are ready.",
       );
       router.push(`/rooms/${room.id}`);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Failed to create room";
+    } catch {
+      const msg = "We couldn’t create this match. Try again in a moment.";
       setError(msg);
       toastError("Could not create arena", msg);
     } finally {
@@ -153,7 +156,10 @@ export default function CreatePage() {
           )}
 
           {loadingAgents ? (
-            <p className="text-[13px] font-medium text-[#52525b]">Loading characters…</p>
+            <div className="space-y-2" aria-label="Loading characters">
+              <div className="h-10 animate-pulse rounded-xl bg-black/[0.04]" />
+              <div className="h-10 animate-pulse rounded-xl bg-black/[0.04]" />
+            </div>
           ) : agents.length < 2 ? (
             <p className="rounded-xl bg-[#fffbeb] px-3 py-2 text-[12px] font-medium text-[#92400e]">
               Need two characters.{" "}
@@ -261,16 +267,24 @@ export default function CreatePage() {
           </div>
 
           {error && (
-            <p className="rounded-xl bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
-              {error}
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
+              <span>{error}</span>
+              <button
+                type="button"
+                onClick={() => void loadAgents().catch(() => setError("We couldn’t load characters right now."))}
+                className="font-semibold underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </div>
           )}
 
           <button
             type="button"
             disabled={submitting || loadingAgents || agents.length < 2}
             onClick={() => void onSubmit()}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] px-5 text-[14px] font-semibold text-white hover:bg-[#18181b] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mm-button-primary h-11 w-full px-5 text-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+            aria-busy={submitting}
           >
             {submitting ? (
               <span className="text-white">Working…</span>

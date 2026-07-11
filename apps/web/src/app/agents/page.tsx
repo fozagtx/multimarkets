@@ -21,7 +21,7 @@ function personalityFrom(character: Character): string {
 }
 
 const fieldClass =
-  "w-full rounded-lg border border-black/[0.08] bg-white px-2.5 py-2 text-[13px] font-medium text-[#0a0a0b] outline-none placeholder:text-[#a1a1aa] focus:border-[#5B7CFA]/40";
+  "w-full rounded-lg border border-black/[0.08] bg-white px-2.5 py-2 text-[13px] font-medium text-[#0a0a0b] outline-none placeholder:text-[#a1a1aa] focus:border-[#5B7CFA]/40 focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/40 focus-visible:ring-offset-2";
 
 const labelClass = "text-[11px] font-semibold text-[#52525b]";
 
@@ -49,8 +49,8 @@ export default function AgentsPage() {
       try {
         setLoading(true);
         await refresh();
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load agents");
+      } catch {
+        if (!cancelled) setError("We couldn’t load characters right now.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -104,10 +104,10 @@ export default function AgentsPage() {
       await refresh();
       setJustCreated(created.name);
       toastSuccess("Character saved", `${created.name} is ready.`);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Failed to register agent";
+    } catch {
+      const msg = "We couldn’t save this character. Try again in a moment.";
       setError(msg);
-      toastError("Register failed", msg);
+      toastError("Character not saved", msg);
     } finally {
       setSubmitting(false);
     }
@@ -149,12 +149,23 @@ export default function AgentsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Reveal delay={0.03} className="flex flex-col gap-1.5">
           {loading && (
-            <p className="text-[13px] font-medium text-[#52525b]">Loading…</p>
+            <div className="space-y-2" aria-label="Loading characters">
+              {[0, 1, 2].map((index) => (
+                <div key={index} className="h-12 animate-pulse rounded-xl bg-black/[0.04]" />
+              ))}
+            </div>
           )}
           {error && (
-            <p className="rounded-lg bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
-              {error}
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
+              <span>{error}</span>
+              <button
+                type="button"
+                onClick={() => void refresh().then(() => setError(null)).catch(() => undefined)}
+                className="font-semibold underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </div>
           )}
           {!loading && agents.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
@@ -256,7 +267,8 @@ export default function AgentsPage() {
                 type="button"
                 disabled={submitting}
                 onClick={() => void onRegister()}
-                className="mt-1 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[13px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
+                className="mm-button-primary mt-1 h-10 w-full text-[13px] disabled:opacity-50"
+                aria-busy={submitting}
               >
                 <Icon icon="solar:user-plus-bold" width={16} className="text-white" />
                 <span className="text-white">{submitting ? "Saving…" : "Save character"}</span>

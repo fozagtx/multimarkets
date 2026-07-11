@@ -21,95 +21,38 @@ const statusIcon: Record<string, string> = {
 
 export type ArenaControlsProps = {
   room: RoomSession;
-  temperature: number;
-  onTemperatureChange: (v: number) => void;
-  maxTurnsHint: number;
-  onMaxTurnsHintChange: (v: number) => void;
-  systemHint: string;
-  onSystemHintChange: (v: string) => void;
   className?: string;
 };
 
-/** Compact arena rail — Soft Structuralism spacing */
-export default function ArenaControls({
-  room,
-  temperature,
-  onTemperatureChange,
-  maxTurnsHint,
-  onMaxTurnsHintChange,
-  systemHint,
-  onSystemHintChange,
-  className,
-}: ArenaControlsProps) {
+/** Compact match rail — only shows live, actionable room information. */
+export default function ArenaControls({ room, className }: ArenaControlsProps) {
+  const [copied, setCopied] = React.useState<"question" | "link" | null>(null);
   const agents: { label: string; name: string; status: AgentStatus }[] = [
-    { label: "Master", name: room.master.name, status: room.master.status },
-    { label: "A", name: room.agentA.name, status: room.agentA.status },
-    { label: "B", name: room.agentB.name, status: room.agentB.status },
+    { label: "Referee", name: room.master.name, status: room.master.status },
+    { label: "First", name: room.agentA.name, status: room.agentA.status },
+    { label: "Second", name: room.agentB.name, status: room.agentB.status },
   ];
+
+  const copy = async (value: string, target: "question" | "link") => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(target);
+      window.setTimeout(() => setCopied(null), 1600);
+    } catch {
+      setCopied(null);
+    }
+  };
 
   return (
     <div className={cn("flex w-full flex-col gap-3", className)}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[13px] font-semibold text-[#0a0a0b]">Controls</p>
+        <p className="text-[13px] font-semibold text-[#0a0a0b]">Match activity</p>
         <StatusBadge status={room.status} />
-      </div>
-
-      <label className="flex flex-col gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#52525b]">
-          Referee notes
-        </span>
-        <textarea
-          value={systemHint}
-          onChange={(e) => onSystemHintChange(e.target.value)}
-          rows={3}
-          className="w-full resize-none rounded-xl border border-black/[0.08] bg-white px-3 py-2 text-[12px] font-medium leading-relaxed text-[#0a0a0b] outline-none focus:border-[#5B7CFA]/40"
-          placeholder="Keep the match fair and on topic…"
-        />
-        <span className="text-[11px] font-medium text-[#71717a]">
-          Host notes you send appear in the match feed.
-        </span>
-      </label>
-
-      <div className="flex flex-col gap-3 rounded-2xl border border-black/[0.06] bg-[#f4f4f5] p-3">
-        <label className="flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[12px] font-semibold text-[#0a0a0b]">Creativity</span>
-            <span className="text-[12px] font-semibold tabular-nums text-[#52525b]">
-              {temperature.toFixed(2)}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={temperature}
-            onChange={(e) => onTemperatureChange(Number(e.target.value))}
-            className="w-full accent-[#0a0a0b]"
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[12px] font-semibold text-[#0a0a0b]">Max turns</span>
-            <span className="text-[12px] font-semibold tabular-nums text-[#52525b]">
-              {maxTurnsHint}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={4}
-            max={40}
-            step={1}
-            value={maxTurnsHint}
-            onChange={(e) => onMaxTurnsHintChange(Number(e.target.value))}
-            className="w-full accent-[#0a0a0b]"
-          />
-        </label>
       </div>
 
       <div className="rounded-2xl border border-black/[0.06] bg-white p-3">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#52525b]">
-          Status
+          In this match
         </p>
         <ul className="flex flex-col gap-1.5">
           {agents.map((a) => (
@@ -139,22 +82,25 @@ export default function ArenaControls({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={() => void navigator.clipboard.writeText(room.marketQuestion)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#0a0a0b] hover:bg-[#fafafa]"
+          onClick={() => void copy(room.marketQuestion, "question")}
+          className="mm-button-secondary h-10 gap-1.5 px-3 text-[11px]"
         >
-          <Icon icon="solar:copy-linear" width={14} />
-          Copy Q
+          <Icon icon={copied === "question" ? "solar:check-read-linear" : "solar:copy-linear"} width={14} />
+          {copied === "question" ? "Copied" : "Copy question"}
         </button>
         <button
           type="button"
-          onClick={() => void navigator.clipboard.writeText(window.location.href)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#0a0a0b] hover:bg-[#fafafa]"
+          onClick={() => void copy(window.location.href, "link")}
+          className="mm-button-secondary h-10 gap-1.5 px-3 text-[11px]"
         >
-          <Icon icon="solar:share-linear" width={14} />
-          Share
+          <Icon icon={copied === "link" ? "solar:check-read-linear" : "solar:share-linear"} width={14} />
+          {copied === "link" ? "Copied" : "Copy link"}
         </button>
       </div>
 
+      <p className="sr-only" aria-live="polite">
+        {copied ? "Copied to clipboard" : ""}
+      </p>
       <p className="text-[11px] font-medium text-[#71717a]">
         Turn {room.currentTurn ?? 0} · {room.agentA.name} vs {room.agentB.name}
       </p>

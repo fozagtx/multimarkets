@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { useIsClient } from "@/hooks/use-is-client";
 
 type HeaderVariant = "dark" | "light";
 
@@ -14,16 +15,15 @@ export function WalletConnectHeader({
 }: {
   variant?: HeaderVariant;
 }) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const mounted = useIsClient();
 
   const solid = cn(
-    "inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[12px] font-semibold transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] sm:h-10 sm:px-4 sm:text-[13px]",
+    "inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[12px] font-semibold transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2 sm:h-10 sm:px-4 sm:text-[13px]",
     "bg-[#0a0a0b] text-white hover:bg-[#18181b]",
   );
 
   const soft = cn(
-    "inline-flex h-9 max-w-[9rem] items-center truncate rounded-full px-3 text-[12px] font-semibold transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] sm:h-10 sm:max-w-[11rem] sm:px-4 sm:text-[13px]",
+    "inline-flex h-9 max-w-[9rem] items-center truncate rounded-full px-3 text-[12px] font-semibold transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5B7CFA]/50 focus-visible:ring-offset-2 sm:h-10 sm:max-w-[11rem] sm:px-4 sm:text-[13px]",
     variant === "light"
       ? "bg-[#f4f4f5] text-[#0a0a0b] ring-1 ring-black/10"
       : "bg-white text-[#0a0a0b] ring-1 ring-black/10",
@@ -88,8 +88,7 @@ export function WalletConnectHeader({
  * Hero primary — single CTA only on dark/light ink buttons
  */
 export function WalletConnectHeroPrimary() {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const mounted = useIsClient();
 
   if (!mounted) {
     return (
@@ -160,8 +159,7 @@ export function WalletConnectActionCard({
     account: { displayName?: string } | undefined;
   }) => React.ReactNode;
 }) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const mounted = useIsClient();
   if (!mounted) {
     return <>{children({ openConnectModal: () => undefined, account: undefined })}</>;
   }

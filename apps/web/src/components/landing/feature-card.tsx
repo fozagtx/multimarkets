@@ -72,7 +72,7 @@ const FeatureCard = React.forwardRef<HTMLDivElement, LandingFeatureCardProps>(
           <div className="relative flex flex-col gap-2">
             <h3
               className={cn(
-                "font-semibold tracking-tight text-[#0a0a0b] transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:text-[#5B7CFA]",
+                "font-semibold tracking-tight text-[#0a0a0b] transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:text-[#5B7CFA]",
                 featured ? "text-2xl md:text-3xl" : "text-lg",
               )}
             >

@@ -9,11 +9,11 @@
 
 | ID | Requirement |
 |----|-------------|
-| R-1 | Server loads **only** `characters/master.json` as the referee.
+| R-1 | Server loads **only** `characters/master.json` as the referee. |
 | R-2 | Fighters exist **only** after `POST /agents` (user-registered). |
 | R-3 | `GET /agents` never returns `master`. |
 | R-4 | A room needs **≥ 2 different** character ids; `master` cannot be a fighter. |
-| R-5 | Debate messages come from a **real** OpenAI-compatible LLM (`OPENROUTER_API_KEY` preferred, else xAI/OpenAI). |
+| R-5 | Debate messages come from OpenRouter (`OPENROUTER_API_KEY`). |
 | R-6 | Missing LLM key → **clear error** on start (`503` + `LLM_NOT_CONFIGURED`). |
 | R-7 | Host notes are real `system` messages on the transcript. |
 | R-8 | SSE stream emits room events (`snapshot`, `message`, `turn_change`, `debate_end`, …). |
@@ -26,9 +26,7 @@
 
 ```bash
 # Required for debates
-OPENROUTER_API_KEY=sk-or-…          # preferred
-# OR XAI_API_KEY=… / OPENAI_API_KEY=…
-
+OPENROUTER_API_KEY=sk-or-…
 OPENROUTER_MODEL=openai/gpt-4o-mini  # optional
 PORT=8787
 

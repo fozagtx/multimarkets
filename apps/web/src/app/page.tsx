@@ -309,16 +309,16 @@ export default function HomePage() {
                 <div className="relative mx-auto mt-8 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
                   <NextLink
                     href="/create"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#0a0a0b] py-3 pl-6 pr-2 text-[15px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(10,10,11,0.45)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#18181b] active:scale-[0.98]"
+                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#0a0a0b] py-3 pl-6 pr-2 text-[15px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(10,10,11,0.45)] transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#18181b] active:scale-[0.98]"
                   >
                     Create match
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/12 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px group-hover:scale-105">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/12 transition-transform duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px group-hover:scale-105">
                       <Icon icon="solar:arrow-right-up-linear" width={15} />
                     </span>
                   </NextLink>
                   <NextLink
                     href="/markets"
-                    className="inline-flex items-center justify-center rounded-full border border-[#0a0a0b] bg-[#0a0a0b] px-6 py-3 text-[15px] font-semibold text-white transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#18181b] active:scale-[0.98]"
+                    className="inline-flex items-center justify-center rounded-full border border-[#0a0a0b] bg-[#0a0a0b] px-6 py-3 text-[15px] font-semibold text-white transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#18181b] active:scale-[0.98]"
                   >
                     Browse markets
                   </NextLink>

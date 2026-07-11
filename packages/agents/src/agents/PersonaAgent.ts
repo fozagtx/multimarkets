@@ -24,18 +24,19 @@ export class LlmGenerationError extends Error {
 }
 
 /**
- * Resolve OpenAI-compatible API config from env.
- * Priority: OPENROUTER_API_KEY → XAI_API_KEY → OPENAI_API_KEY
- * Override with LLM_PROVIDER=openrouter|xai|openai
+ * Resolve OpenRouter LLM config from env.
+ * Requires OPENROUTER_API_KEY.
  */
 export function resolveLlmConfig(): LlmConfig {
-  const forced = (process.env.LLM_PROVIDER ?? "").trim().toLowerCase();
   const openrouterKey = process.env.OPENROUTER_API_KEY?.trim();
-  const xaiKey = process.env.XAI_API_KEY?.trim();
-  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!openrouterKey) {
+    throw new LlmConfigError(
+      "Missing OPENROUTER_API_KEY. Set it before generating agent messages.",
+    );
+  }
 
-  const openrouter = (): LlmConfig => ({
-    apiKey: openrouterKey!,
+  return {
+    apiKey: openrouterKey,
     baseUrl: (
       process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1"
     ).replace(/\/$/, ""),
@@ -49,57 +50,7 @@ export function resolveLlmConfig(): LlmConfig {
         process.env.OPENROUTER_HTTP_REFERER ?? "https://multimarkets.local",
       "X-Title": process.env.OPENROUTER_APP_TITLE ?? "MultiMarkets",
     },
-  });
-
-  const xai = (): LlmConfig => ({
-    apiKey: xaiKey!,
-    baseUrl: (process.env.XAI_BASE_URL ?? "https://api.x.ai/v1").replace(
-      /\/$/,
-      "",
-    ),
-    model: process.env.XAI_MODEL ?? process.env.LLM_MODEL ?? "grok-3",
-    provider: "xai",
-  });
-
-  const openai = (): LlmConfig => ({
-    apiKey: openaiKey!,
-    baseUrl: (
-      process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1"
-    ).replace(/\/$/, ""),
-    model: process.env.OPENAI_MODEL ?? process.env.LLM_MODEL ?? "gpt-4o",
-    provider: "openai",
-  });
-
-  if (forced === "openrouter") {
-    if (!openrouterKey) {
-      throw new LlmConfigError(
-        "LLM_PROVIDER=openrouter but OPENROUTER_API_KEY is missing.",
-      );
-    }
-    return openrouter();
-  }
-  if (forced === "xai") {
-    if (!xaiKey) {
-      throw new LlmConfigError("LLM_PROVIDER=xai but XAI_API_KEY is missing.");
-    }
-    return xai();
-  }
-  if (forced === "openai") {
-    if (!openaiKey) {
-      throw new LlmConfigError(
-        "LLM_PROVIDER=openai but OPENAI_API_KEY is missing.",
-      );
-    }
-    return openai();
-  }
-
-  if (openrouterKey) return openrouter();
-  if (xaiKey) return xai();
-  if (openaiKey) return openai();
-
-  throw new LlmConfigError(
-    "Missing LLM API key. Set OPENROUTER_API_KEY (preferred), XAI_API_KEY, or OPENAI_API_KEY before generating agent messages.",
-  );
+  };
 }
 
 interface ChatMessage {
@@ -149,6 +100,36 @@ async function chatCompletion(
     throw new LlmGenerationError("LLM returned empty content");
   }
   return content;
+}
+
+/**
+ * Models often echo "[Name]:" / "Name:" labels from chat history.
+ * Strip stacked speaker prefixes so the UI shows clean dialogue.
+ */
+export function stripSpeakerLabels(text: string, agentName?: string): string {
+  let out = text.trim();
+  if (!out) return out;
+
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  for (let i = 0; i < 8; i++) {
+    const before = out;
+    // [Name]: [Name]: …
+    out = out.replace(/^(\[[^\]]+\]\s*:\s*)+/i, "").trim();
+    // Name: …
+    if (agentName) {
+      out = out
+        .replace(new RegExp(`^${escape(agentName)}\\s*:\\s*`, "i"), "")
+        .trim();
+    }
+    // Generic short speaker tag (≤4 words) before a colon
+    out = out.replace(/^([A-Za-z][A-Za-z0-9 _.'-]{0,40})\s*:\s+/, (full, name) => {
+      if (String(name).trim().split(/\s+/).length <= 4) return "";
+      return full;
+    }).trim();
+    if (out === before) break;
+  }
+  return out;
 }
 
 export interface PersonaAgentOptions {
@@ -209,7 +190,7 @@ export class PersonaAgent {
   }
 
   /**
-   * Generate an in-character debate message. Requires a real LLM API key.
+   * Generate an in-character debate message via OpenRouter.
    * Throws if the key is missing or the provider fails.
    */
   async generateMessage(params: {
@@ -234,28 +215,33 @@ export class PersonaAgent {
       this.character.personalityType?.trim() ||
       this.character.adjectives?.map((a) => a.trim()).filter(Boolean)[0];
 
+    // Pass raw prior lines only — do NOT wrap as "[Name]: …" or the model echoes/stacks labels
     const history: ChatMessage[] = params.transcript.map((m) => ({
       role: m.agentId === this.id ? "assistant" : "user",
-      content: `[${m.agentName}]: ${m.content}`,
+      content:
+        m.agentId === this.id
+          ? stripSpeakerLabels(m.content, m.agentName)
+          : `${m.agentName}: ${stripSpeakerLabels(m.content, m.agentName)}`,
     }));
 
     const userCue =
       params.instruction ??
       (this.role === "master"
-        ? `Coordinate turn ${params.turn}. Keep the debate on topic: "${params.topic}". Market question: "${params.marketQuestion}". Issue a brief facilitator note or hand the floor.`
+        ? `Coordinate turn ${params.turn}. Keep the debate on topic: "${params.topic}". Market question: "${params.marketQuestion}". Issue a brief facilitator note or hand the floor. Reply as plain text only — no name prefix.`
         : `It is your turn (turn ${params.turn}) in the debate on: "${params.topic}". Market question: "${params.marketQuestion}".${
             personalityType
               ? ` Stay true to your personality type: ${personalityType}.`
               : ""
-          } Respond in character to the latest points.`);
+          } Respond in character to the latest points. Output ONLY your spoken lines — never prefix with your name, brackets, or "[${this.character.name}]:".`);
 
     try {
       this.status = "speaking";
-      const content = await chatCompletion(config, [
+      const raw = await chatCompletion(config, [
         { role: "system", content: system },
         ...history,
         { role: "user", content: userCue },
       ]);
+      const content = stripSpeakerLabels(raw, this.character.name);
 
       const message: AgentMessage = {
         id: randomUUID(),

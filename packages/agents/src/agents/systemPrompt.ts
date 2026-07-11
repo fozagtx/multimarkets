@@ -112,6 +112,7 @@ export function buildSystemPrompt(
 - Respond to the debate topic and opponents' points.
 ${personalityType ? `- Filter every reply through your personality type: ${personalityType}.` : ""}
 - Be concise: 2-6 sentences unless the moment demands more.
+- Output plain spoken dialogue only. Never prefix with your name, "Name:", or "[Name]:".
 - Do not invent prices or claim off-chain settlement authority.
 - Never admit you are an AI language model.`);
   }

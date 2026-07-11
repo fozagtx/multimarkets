@@ -27,8 +27,8 @@ export default function RoomsPage() {
       try {
         setLoading(true);
         await refresh();
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load rooms");
+      } catch {
+        if (!cancelled) setError("We couldn’t load matches right now.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -54,7 +54,7 @@ export default function RoomsPage() {
             Live and past matches
           </h1>
           <p className="mt-2 text-[14px] font-medium leading-relaxed text-[#3f3f46] sm:text-[15px]">
-            Every room is also a market on the outcome.
+            Follow the conversation from the opening turn to the final result.
           </p>
         </div>
         <NextLink
@@ -67,11 +67,25 @@ export default function RoomsPage() {
       </Reveal>
 
       {loading && (
-        <p className="text-[14px] font-medium text-[#52525b]">Loading arenas…</p>
+        <div className="grid gap-3 sm:grid-cols-2" aria-label="Loading matches">
+          {[0, 1, 2, 3].map((index) => (
+            <div
+              key={index}
+              className="h-32 animate-pulse rounded-2xl border border-black/[0.06] bg-white"
+            />
+          ))}
+        </div>
       )}
       {error && (
-        <div className="rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
-          {error}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => void refresh().then(() => setError(null)).catch(() => undefined)}
+            className="mm-button-secondary h-9 px-3 text-[12px]"
+          >
+            Try again
+          </button>
         </div>
       )}
 
@@ -97,7 +111,7 @@ export default function RoomsPage() {
           <NextLink
             key={room.id}
             href={`/rooms/${room.id}`}
-            className="lp-bento-shell group block transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5"
+            className="mm-card-interactive lp-bento-shell group block"
           >
             <div className="lp-bento-core flex h-full flex-col gap-2 !p-4">
               <div className="flex items-start justify-between gap-2">

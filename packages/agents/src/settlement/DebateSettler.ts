@@ -151,12 +151,10 @@ function resolveSecret(explicit?: string): string {
   if (explicit) return explicit;
   const fromEnv =
     process.env.SETTLEMENT_HMAC_SECRET?.trim() ||
-    process.env.OPENROUTER_API_KEY?.trim() ||
-    process.env.XAI_API_KEY?.trim() ||
-    process.env.OPENAI_API_KEY?.trim();
+    process.env.OPENROUTER_API_KEY?.trim();
   if (!fromEnv) {
     throw new Error(
-      "Cannot sign settlement payload: set SETTLEMENT_HMAC_SECRET (or OPENROUTER_API_KEY / XAI_API_KEY / OPENAI_API_KEY)",
+      "Cannot sign settlement payload: set SETTLEMENT_HMAC_SECRET (or OPENROUTER_API_KEY)",
     );
   }
   return fromEnv;
