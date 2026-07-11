@@ -114,7 +114,7 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div className="mx-auto w-full max-w-5xl">
       <Reveal className="mb-5 flex items-end justify-between gap-3">
         <div>
           <span className="lp-eyebrow">
@@ -186,31 +186,31 @@ export default function AgentsPage() {
         </Reveal>
 
         <Reveal delay={0.05}>
-          <div className="flex flex-col gap-2.5">
-            <p className="text-[13px] font-semibold text-[#0a0a0b]">New character</p>
+          <div className="lp-bezel h-fit">
+            <div className="lp-bezel-core flex flex-col gap-3 p-4 sm:p-5">
+              <h2 className="text-[15px] font-semibold text-[#0a0a0b]">New character</h2>
 
-            <label className="flex flex-col gap-1">
-              <span className={labelClass}>Name</span>
-              <input
-                className={fieldClass}
-                placeholder="Character name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Name</span>
+                <input
+                  className={fieldClass}
+                  placeholder="Character name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
 
-            <label className="flex flex-col gap-1">
-              <span className={labelClass}>Bio</span>
-              <textarea
-                className={fieldClass}
-                rows={2}
-                placeholder={"Who they are\nHow they speak"}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-              />
-            </label>
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Bio</span>
+                <textarea
+                  className={fieldClass}
+                  rows={3}
+                  placeholder={"Who they are\nHow they speak"}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                />
+              </label>
 
-            <div className="grid gap-2.5 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
                 <span className={labelClass}>Personality</span>
                 <input
@@ -220,6 +220,7 @@ export default function AgentsPage() {
                   onChange={(e) => setPersonalityType(e.target.value)}
                 />
               </label>
+
               <label className="flex flex-col gap-1">
                 <span className={labelClass}>Traits</span>
                 <input
@@ -229,38 +230,38 @@ export default function AgentsPage() {
                   onChange={(e) => setAdjectives(e.target.value)}
                 />
               </label>
+
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Topics</span>
+                <input
+                  className={fieldClass}
+                  placeholder="markets, tech, policy"
+                  value={topics}
+                  onChange={(e) => setTopics(e.target.value)}
+                />
+              </label>
+
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Chat style</span>
+                <textarea
+                  className={fieldClass}
+                  rows={2}
+                  placeholder={"Short punchy sentences"}
+                  value={styleChat}
+                  onChange={(e) => setStyleChat(e.target.value)}
+                />
+              </label>
+
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => void onRegister()}
+                className="mt-1 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[13px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
+              >
+                <Icon icon="solar:user-plus-bold" width={16} className="text-white" />
+                <span className="text-white">{submitting ? "Saving…" : "Save character"}</span>
+              </button>
             </div>
-
-            <label className="flex flex-col gap-1">
-              <span className={labelClass}>Topics</span>
-              <input
-                className={fieldClass}
-                placeholder="markets, tech, policy"
-                value={topics}
-                onChange={(e) => setTopics(e.target.value)}
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <span className={labelClass}>Chat style</span>
-              <textarea
-                className={fieldClass}
-                rows={2}
-                placeholder={"Short punchy sentences"}
-                value={styleChat}
-                onChange={(e) => setStyleChat(e.target.value)}
-              />
-            </label>
-
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => void onRegister()}
-              className="mt-1 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[13px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
-            >
-              <Icon icon="solar:user-plus-bold" width={16} className="text-white" />
-              <span className="text-white">{submitting ? "Saving…" : "Save character"}</span>
-            </button>
           </div>
         </Reveal>
       </div>
