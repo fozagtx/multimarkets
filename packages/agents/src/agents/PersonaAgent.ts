@@ -230,6 +230,10 @@ export class PersonaAgent {
       opponentNames: params.opponentNames,
     });
 
+    const personalityType =
+      this.character.personalityType?.trim() ||
+      this.character.adjectives?.map((a) => a.trim()).filter(Boolean)[0];
+
     const history: ChatMessage[] = params.transcript.map((m) => ({
       role: m.agentId === this.id ? "assistant" : "user",
       content: `[${m.agentName}]: ${m.content}`,
@@ -239,7 +243,11 @@ export class PersonaAgent {
       params.instruction ??
       (this.role === "master"
         ? `Coordinate turn ${params.turn}. Keep the debate on topic: "${params.topic}". Market question: "${params.marketQuestion}". Issue a brief facilitator note or hand the floor.`
-        : `It is your turn (turn ${params.turn}) in the debate on: "${params.topic}". Market question: "${params.marketQuestion}". Respond in character to the latest points.`);
+        : `It is your turn (turn ${params.turn}) in the debate on: "${params.topic}". Market question: "${params.marketQuestion}".${
+            personalityType
+              ? ` Stay true to your personality type: ${personalityType}.`
+              : ""
+          } Respond in character to the latest points.`);
 
     try {
       this.status = "speaking";

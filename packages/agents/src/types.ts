@@ -20,6 +20,11 @@ export const CharacterSchema = z.object({
   postExamples: z.array(z.string()).default([]),
   topics: z.array(z.string()).default([]),
   adjectives: z.array(z.string()).default([]),
+  /**
+   * Primary personality label (e.g. "bold", "skeptical").
+   * Used in LLM context. Falls back to adjectives[0] if omitted.
+   */
+  personalityType: z.string().min(1).optional(),
   style: z
     .object({
       all: z.array(z.string()).default([]),
@@ -179,8 +184,10 @@ export interface FailoverAction {
 
 export interface PersonalityProfile {
   name: string;
+  /** Primary type label (explicit personalityType or first adjective) */
+  personalityType?: string;
   traits: string[];
   topics: string[];
   summary: string;
-  source: "bio" | "adjectives" | "mixed";
+  source: "bio" | "adjectives" | "mixed" | "personalityType";
 }

@@ -193,16 +193,22 @@ export function createApp(): Hono {
       (ch) => (ch.id ?? "").toLowerCase() !== "master",
     );
     return c.json({
-      agents: personas.map((ch) => ({
-        id: ch.id,
-        name: ch.name,
-        bio: ch.bio,
-        adjectives: ch.adjectives,
-        topics: ch.topics,
-        style: ch.style,
-        lore: ch.lore,
-        personalityType: ch.adjectives?.[0],
-      })),
+      agents: personas.map((ch) => {
+        const personalityType =
+          ch.personalityType?.trim() ||
+          ch.adjectives?.map((a) => a.trim()).filter(Boolean)[0] ||
+          undefined;
+        return {
+          id: ch.id,
+          name: ch.name,
+          bio: ch.bio,
+          adjectives: ch.adjectives,
+          topics: ch.topics,
+          style: ch.style,
+          lore: ch.lore,
+          personalityType,
+        };
+      }),
     });
   });
 

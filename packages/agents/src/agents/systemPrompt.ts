@@ -1,4 +1,8 @@
 import type { Character } from "../types.js";
+import {
+  extractPersonality,
+  resolvePersonalityType,
+} from "../character/fetchPersona.js";
 
 function asLines(value: string | string[]): string[] {
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -10,7 +14,7 @@ function asLines(value: string | string[]): string[] {
 
 /**
  * Build an Eliza-style system prompt from a Character definition.
- * Used by PersonaAgent and MasterAgent for LLM generation.
+ * Personality type is always resolved and injected into LLM context.
  */
 export function buildSystemPrompt(
   character: Character,
@@ -22,11 +26,24 @@ export function buildSystemPrompt(
   },
 ): string {
   const bio = asLines(character.bio);
+  const personality = extractPersonality(character);
+  const personalityType = resolvePersonalityType(character);
   const sections: string[] = [];
 
   sections.push(
     `You are ${character.name}. You must stay fully in character at all times.`,
   );
+
+  // Primary personality signal — first-class context for the model
+  if (personalityType) {
+    sections.push(
+      `## Personality type\n${personalityType}\nYou must speak and reason as someone whose core type is "${personalityType}".`,
+    );
+  }
+
+  if (personality.summary) {
+    sections.push(`## Personality profile\n${personality.summary}`);
+  }
 
   if (character.system) {
     sections.push(character.system);
@@ -36,20 +53,22 @@ export function buildSystemPrompt(
     sections.push(`## Bio\n${bio.map((b) => `- ${b}`).join("\n")}`);
   }
 
-  if (character.lore.length > 0) {
+  if ((character.lore ?? []).length > 0) {
     sections.push(
       `## Lore / background\n${character.lore.map((l) => `- ${l}`).join("\n")}`,
     );
   }
 
-  if (character.adjectives.length > 0) {
+  if (personality.traits.length > 0) {
     sections.push(
-      `## Personality adjectives\n${character.adjectives.join(", ")}`,
+      `## Personality traits\n${personality.traits.join(", ")}\nExpress these traits in tone, word choice, and stance.`,
     );
   }
 
-  if (character.topics.length > 0) {
-    sections.push(`## Topics you care about\n${character.topics.join(", ")}`);
+  if (personality.topics.length > 0) {
+    sections.push(
+      `## Topics you care about\n${personality.topics.join(", ")}`,
+    );
   }
 
   const styleAll = character.style?.all ?? [];
@@ -59,13 +78,13 @@ export function buildSystemPrompt(
     sections.push(`## Style guidelines\n${lines}`);
   }
 
-  if (character.knowledge.length > 0) {
+  if ((character.knowledge ?? []).length > 0) {
     sections.push(
       `## Knowledge\n${character.knowledge.map((k) => `- ${k}`).join("\n")}`,
     );
   }
 
-  if (character.messageExamples.length > 0) {
+  if ((character.messageExamples ?? []).length > 0) {
     const examples = character.messageExamples
       .slice(0, 4)
       .map((thread, i) => {
@@ -75,22 +94,25 @@ export function buildSystemPrompt(
         return `Example ${i + 1}:\n${body}`;
       })
       .join("\n\n");
-    sections.push(`## Message examples (imitate voice, not content)\n${examples}`);
+    sections.push(
+      `## Message examples (imitate voice, not content)\n${examples}`,
+    );
   }
 
   if (extras?.role === "master") {
-    sections.push(`## Master coordinator rules
-- You are the Master Agent orchestrating a multi-persona debate.
-- Enforce turn-taking, keep agents on topic, summarize when needed.
-- Detect deadlocks, toxic drift, and off-topic rambling; redirect firmly.
-- Do not impersonate the persona agents; speak as the coordinator.
+    sections.push(`## Referee / coordinator rules
+- You coordinate a multi-character debate fairly.
+- Enforce turn-taking, keep speakers on topic, summarize when needed.
+- Detect deadlocks and off-topic drift; redirect firmly.
+- Do not impersonate the fighters; speak as the referee.
 - When debate criteria are met, call for settlement votes.`);
   } else {
     sections.push(`## Debate rules
 - Stay strictly in character. Never break the fourth wall.
 - Respond to the debate topic and opponents' points.
+${personalityType ? `- Filter every reply through your personality type: ${personalityType}.` : ""}
 - Be concise: 2-6 sentences unless the moment demands more.
-- Do not invent oracle prices or claim off-chain settlement authority.
+- Do not invent prices or claim off-chain settlement authority.
 - Never admit you are an AI language model.`);
   }
 
@@ -118,10 +140,13 @@ export function buildSettlementPrompt(
   character: Character,
   marketQuestion: string,
 ): string {
-  return `${buildSystemPrompt(character, { role: character.name.toLowerCase().includes("master") ? "master" : "persona", marketQuestion })}
+  const role = character.name.toLowerCase().includes("master")
+    ? "master"
+    : "persona";
+  return `${buildSystemPrompt(character, { role, marketQuestion })}
 
 ## Settlement task
-You have finished debating. Based ONLY on the debate transcript and your persona's genuine conclusion, vote on the market question.
+You have finished debating. Based ONLY on the debate transcript and your genuine conclusion in character, vote on the market question.
 
 Respond with valid JSON only, no markdown fences:
 {

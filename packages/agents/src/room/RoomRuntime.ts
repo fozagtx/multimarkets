@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { PersonaAgent } from "../agents/PersonaAgent.js";
 import { MasterAgent } from "../master/MasterAgent.js";
 import { DebateSettler } from "../settlement/DebateSettler.js";
+import { withResolvedPersonality } from "../character/fetchPersona.js";
 import { EventBus } from "./EventBus.js";
 import type {
   AgentMessage,
@@ -45,14 +46,14 @@ export class RoomRuntime {
     const personas = characters.map(
       (c) =>
         new PersonaAgent({
-          character: c,
+          character: withResolvedPersonality(c),
           roomId: id,
           role: "persona",
         }),
     );
 
     const master = new MasterAgent({
-      character: masterCharacter,
+      character: withResolvedPersonality(masterCharacter),
       roomId: id,
       eventBus: this.eventBus,
       maxTurns: config.maxTurns ?? 8,

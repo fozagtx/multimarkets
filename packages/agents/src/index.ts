@@ -34,6 +34,8 @@ export {
 export {
   fetchPersona,
   extractPersonality,
+  resolvePersonalityType,
+  withResolvedPersonality,
 } from "./character/fetchPersona.js";
 
 export {

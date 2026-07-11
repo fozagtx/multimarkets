@@ -32,6 +32,13 @@ export function validateCharacter(raw: unknown): Character {
   if (!character.id) {
     character.id = slugify(character.name);
   }
+  // Normalize personality type into the stored character for LLM context
+  const type =
+    character.personalityType?.trim() ||
+    character.adjectives.map((a) => a.trim()).filter(Boolean)[0];
+  if (type) {
+    character.personalityType = type;
+  }
   return character;
 }
 

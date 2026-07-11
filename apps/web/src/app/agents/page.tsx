@@ -11,12 +11,13 @@ import { listAgents, registerAgent, type Character } from "@/lib/agent-api";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Reveal } from "@/components/landing/reveal";
 
+/** Display label: primary personality type, then traits, then bio snippet */
 function personalityFrom(character: Character): string {
-  if (character.personalityType) return character.personalityType;
-  const adj = character.adjectives?.slice(0, 3).join(", ");
-  if (adj) return adj;
+  if (character.personalityType?.trim()) return character.personalityType.trim();
+  const firstAdj = character.adjectives?.map((a) => a.trim()).filter(Boolean)[0];
+  if (firstAdj) return firstAdj;
   const bio = Array.isArray(character.bio) ? character.bio[0] : character.bio;
-  return bio?.slice(0, 80) || "Undefined";
+  return bio?.slice(0, 80) || "Unset";
 }
 
 const fieldClass =
@@ -28,6 +29,7 @@ export default function AgentsPage() {
   const [loading, setLoading] = React.useState(true);
   const [name, setName] = React.useState("");
   const [bio, setBio] = React.useState("");
+  const [personalityType, setPersonalityType] = React.useState("");
   const [adjectives, setAdjectives] = React.useState("");
   const [topics, setTopics] = React.useState("");
   const [styleChat, setStyleChat] = React.useState("");
@@ -66,16 +68,19 @@ export default function AgentsPage() {
     }
     try {
       setSubmitting(true);
+      const adjList = adjectives
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const typeLabel =
+        personalityType.trim() || adjList[0] || undefined;
       const created = await registerAgent({
         name: name.trim(),
         bio: bio
           .split("\n")
           .map((l) => l.trim())
           .filter(Boolean),
-        adjectives: adjectives
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        adjectives: adjList,
         topics: topics
           .split(",")
           .map((s) => s.trim())
@@ -87,10 +92,11 @@ export default function AgentsPage() {
             .filter(Boolean),
           all: [],
         },
-        personalityType: adjectives.split(",")[0]?.trim() || undefined,
+        personalityType: typeLabel,
       });
       setName("");
       setBio("");
+      setPersonalityType("");
       setAdjectives("");
       setTopics("");
       setStyleChat("");
@@ -233,7 +239,19 @@ export default function AgentsPage() {
 
             <label className="flex flex-col gap-1">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Adjectives (comma-separated)
+                Personality type
+              </span>
+              <input
+                className={fieldClass}
+                placeholder="e.g. bold, skeptical, warm"
+                value={personalityType}
+                onChange={(e) => setPersonalityType(e.target.value)}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
+                Traits (comma-separated)
               </span>
               <input
                 className={fieldClass}
@@ -278,7 +296,7 @@ export default function AgentsPage() {
               <span className="text-white">{submitting ? "Saving…" : "Save character"}</span>
             </button>
             <p className="text-[12px] font-medium text-[#71717a]">
-              Name and bio shape how they speak in the match.
+              Personality type is the main voice for every reply. Traits and style refine it.
             </p>
           </div>
         </div>
