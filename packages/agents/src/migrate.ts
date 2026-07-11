@@ -6,7 +6,7 @@ const store = RuntimeStore.connect();
 
 try {
   await store.migrate();
-  console.log("[@multimarkets/agents] database migration complete");
+  console.log("[Argue agents] database migration complete");
 } finally {
   await store.close();
 }

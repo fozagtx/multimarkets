@@ -61,7 +61,7 @@ export function mergeWebEnvFile(
   }
 
   const out: string[] = [
-    "# MultiMarkets — generated / merged by contracts deploy (HashKey testnet 133)",
+    "# Argue — generated / merged by contracts deploy (HashKey testnet 133)",
     "# Gas faucet: https://faucet.hsk.xyz/faucet",
     "# Do not commit real secrets. PRIVATE_KEY never goes here.",
     "",

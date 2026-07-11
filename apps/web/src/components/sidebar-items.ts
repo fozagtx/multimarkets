@@ -1,6 +1,6 @@
 /**
  * Design ProMax — Application/sidebars (19)__sidebar-items
- * MultiMarkets nav sections
+ * Argue nav sections
  */
 
 import type { SidebarItem } from "./sidebar";

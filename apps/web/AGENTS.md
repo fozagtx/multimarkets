@@ -5,7 +5,7 @@ This version has breaking changes - APIs, conventions, and file structure may al
 <!-- END:nextjs-agent-rules -->
 
 # ===================================================
-# MultiMarkets — absolute agent rules
+# Argue — absolute agent rules
 # ===================================================
 
 ## UI copy rules (non-negotiable)

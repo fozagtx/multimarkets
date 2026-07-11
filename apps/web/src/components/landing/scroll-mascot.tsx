@@ -66,76 +66,81 @@ export default function ScrollMascot() {
     <div className="scroll-mascot" aria-hidden>
       <svg
         ref={mascotRef}
-        viewBox="0 0 156 188"
+        viewBox="0 0 176 176"
         className="scroll-mascot-art"
         focusable="false"
       >
         <defs>
-          <linearGradient id="mascot-shell" x1="25" y1="20" x2="130" y2="162">
-            <stop stopColor="#84a4ff" />
-            <stop offset="1" stopColor="#3859d9" />
+          <linearGradient id="mascot-shell" x1="38" y1="28" x2="132" y2="141">
+            <stop stopColor="#FFD17A" />
+            <stop offset="0.58" stopColor="#FFB454" />
+            <stop offset="1" stopColor="#E57C2D" />
           </linearGradient>
-          <linearGradient id="mascot-face" x1="50" y1="52" x2="111" y2="126">
-            <stop stopColor="#14234f" />
-            <stop offset="1" stopColor="#09132c" />
+          <linearGradient id="mascot-visor" x1="58" y1="64" x2="120" y2="118">
+            <stop stopColor="#1E2949" />
+            <stop offset="1" stopColor="#070B18" />
           </linearGradient>
           <filter id="mascot-shadow" x="-40%" y="-40%" width="180%" height="180%">
             <feDropShadow
               dx="0"
-              dy="10"
-              stdDeviation="9"
-              floodColor="#12204c"
-              floodOpacity="0.27"
+              dy="12"
+              stdDeviation="8"
+              floodColor="#4D270E"
+              floodOpacity="0.26"
             />
           </filter>
         </defs>
 
         <g className="scroll-mascot-orbit">
-          <circle cx="78" cy="89" r="70" fill="none" stroke="#5B7CFA" strokeOpacity="0.18" strokeWidth="1.4" />
-          <circle cx="26" cy="43" r="4.5" fill="#FFB86C" />
-          <circle cx="132" cy="122" r="3.5" fill="#5B7CFA" />
+          <path
+            d="M32 123c19 30 73 38 113 5"
+            fill="none"
+            stroke="#5B7CFA"
+            strokeDasharray="3 7"
+            strokeLinecap="round"
+            strokeOpacity="0.3"
+            strokeWidth="2"
+          />
+          <circle cx="35" cy="126" r="4" fill="#5B7CFA" />
+          <circle cx="143" cy="129" r="4" fill="#FFB454" />
         </g>
 
         <g className="scroll-mascot-body" filter="url(#mascot-shadow)">
           <path
-            d="M38 67C38 39 55 22 78 22s40 17 40 45v51c0 27-16 45-40 45s-40-18-40-45V67Z"
+            d="M39 87c0-35 22-58 49-58s49 23 49 58-22 57-49 57-49-22-49-57Z"
             fill="url(#mascot-shell)"
           />
-          <path
-            d="M49 73c0-18 12-31 29-31s29 13 29 31v40c0 18-12 31-29 31s-29-13-29-31V73Z"
-            fill="url(#mascot-face)"
-          />
-          <path
-            d="M51 52c9-16 45-16 54 0"
-            fill="none"
-            stroke="#DCE5FF"
-            strokeLinecap="round"
-            strokeOpacity="0.72"
-            strokeWidth="3"
-          />
+          <path d="M45 88 30 78c-7-5-13 0-12 8l1 9c1 8 9 11 15 6l13-10" fill="#E57C2D" />
+          <path d="m131 88 15-10c7-5 13 0 12 8l-1 9c-1 8-9 11-15 6l-13-10" fill="#E57C2D" />
+          <path d="M57 69c0-15 13-25 31-25s31 10 31 25v32c0 15-13 25-31 25s-31-10-31-25V69Z" fill="url(#mascot-visor)" />
+          <path d="M55 64c11-16 50-18 67 0" fill="none" stroke="#FFE4AB" strokeLinecap="round" strokeOpacity="0.76" strokeWidth="4" />
+          <path d="M82 31V17" fill="none" stroke="#1E2949" strokeLinecap="round" strokeWidth="4" />
+          <circle cx="82" cy="13" r="6" fill="#5B7CFA" />
+          <circle cx="82" cy="13" r="2" fill="#E8EFFF" />
+          <circle cx="133" cy="89" r="10" fill="#1E2949" />
+          <circle cx="133" cy="89" r="4" fill="#FF6C3C" />
+          <path d="M77 139h22" fill="none" stroke="#B95822" strokeLinecap="round" strokeWidth="3" />
+          <path d="M84 139h8" fill="none" stroke="#FFE4AB" strokeLinecap="round" strokeWidth="3" />
           <g className="scroll-mascot-eyes">
-            <circle cx="66" cy="88" r="10" fill="#ECF1FF" />
-            <circle cx="90" cy="88" r="10" fill="#ECF1FF" />
-            <circle className="scroll-mascot-pupil" cx="66" cy="88" r="4.2" fill="#5B7CFA" />
-            <circle className="scroll-mascot-pupil" cx="90" cy="88" r="4.2" fill="#5B7CFA" />
+            <rect x="69" y="76" width="9" height="21" rx="4.5" fill="#FFF7E9" />
+            <rect x="98" y="76" width="9" height="21" rx="4.5" fill="#FFF7E9" />
+            <path d="M72 81v11M101 81v11" stroke="#FFC566" strokeLinecap="round" strokeWidth="2" />
           </g>
-          <path
-            d="M65 113c8 7 18 7 26 0"
-            fill="none"
-            stroke="#DCE5FF"
-            strokeLinecap="round"
-            strokeWidth="3"
-          />
-          <path d="M60 132h36" stroke="#AEC0FF" strokeLinecap="round" strokeWidth="3" />
-          <circle cx="78" cy="132" r="4" fill="#FFB86C" />
+          <g className="scroll-mascot-signal">
+            <path d="M117 48c9 4 13 11 13 20" fill="none" stroke="#5B7CFA" strokeLinecap="round" strokeWidth="3" />
+            <path d="M127 41c14 7 20 18 19 32" fill="none" stroke="#5B7CFA" strokeLinecap="round" strokeOpacity="0.62" strokeWidth="3" />
+          </g>
+          <circle className="scroll-mascot-flash" cx="46" cy="61" r="4" fill="#FFF7E9" />
+          <circle className="scroll-mascot-flash" cx="126" cy="121" r="3" fill="#5B7CFA" />
         </g>
 
-        <g className="scroll-mascot-signal">
-          <path d="M121 55c9 7 9 18 0 25" fill="none" stroke="#5B7CFA" strokeLinecap="round" strokeWidth="3" />
-          <path d="M130 47c15 12 15 30 0 42" fill="none" stroke="#5B7CFA" strokeLinecap="round" strokeOpacity="0.55" strokeWidth="3" />
+        <g className="scroll-mascot-spark">
+          <path
+            d="m150 40 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z"
+            fill="#FFB454"
+          />
         </g>
       </svg>
-      <span className="scroll-mascot-caption">Watching the argument</span>
     </div>
   );
 }

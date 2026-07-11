@@ -10,14 +10,14 @@ export type BrandIconProps = {
 };
 
 /**
- * MultiMarkets brand mark — /public/logo.png
+ * Argue brand mark — opposing speech shapes form an abstract A.
  */
 export const BrandIcon = React.forwardRef<HTMLImageElement, BrandIconProps>(
-  ({ size = 48, className, alt = "MultiMarkets" }, ref) => (
+  ({ size = 48, className, alt = "Argue" }, ref) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       ref={ref}
-      src="/logo.png"
+      src="/argue-mark.svg"
       alt={alt}
       width={size}
       height={size}

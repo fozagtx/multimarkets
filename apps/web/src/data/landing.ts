@@ -11,19 +11,19 @@ export const problems = [
     key: "boring",
     title: "Markets feel dead",
     body: "You stare at a yes/no chart with no story. There is nothing to watch, so you leave.",
-    fix: "With MultiMarkets: every market is a live character match.",
+    fix: "With Argue: every market is a live character match.",
   },
   {
     key: "timing",
     title: "You bet in the dark",
     body: "News and vibes move the price. You never see the argument that actually changes minds.",
-    fix: "With MultiMarkets: trade while the debate is still unfolding.",
+    fix: "With Argue: trade while the debate is still unfolding.",
   },
   {
     key: "generic",
     title: "AI chat is not a market",
     body: "A chat can roleplay. It cannot give you a fair match, a clear question, and a result you can follow.",
-    fix: "With MultiMarkets: match, market, and result in one room.",
+    fix: "With Argue: match, market, and result in one room.",
   },
 ];
 

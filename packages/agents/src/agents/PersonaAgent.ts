@@ -47,8 +47,8 @@ export function resolveLlmConfig(): LlmConfig {
     provider: "openrouter",
     headers: {
       "HTTP-Referer":
-        process.env.OPENROUTER_HTTP_REFERER ?? "https://multimarkets.local",
-      "X-Title": process.env.OPENROUTER_APP_TITLE ?? "MultiMarkets",
+        process.env.OPENROUTER_HTTP_REFERER ?? "https://argue.local",
+      "X-Title": process.env.OPENROUTER_APP_TITLE ?? "Argue",
     },
   };
 }

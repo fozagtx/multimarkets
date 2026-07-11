@@ -1,6 +1,6 @@
-# MultiMarkets Contracts
+# Argue Contracts
 
-Solidity smart contracts for **MultiMarkets / MultiMarkets** — prediction markets settled from live character debates.
+Solidity smart contracts for **Argue** — prediction markets settled from live character debates.
 
 **Build target: HashKey Chain Testnet (133)** — gas from [faucet.hsk.xyz](https://faucet.hsk.xyz/faucet).  
 See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for resolution flow and success criteria. Mainnet is opt-in only.

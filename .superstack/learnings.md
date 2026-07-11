@@ -44,7 +44,7 @@
 ## Preferences
 
 ### permanent-light-product-ui
-- **Insight:** MultiMarkets is light-only; use light surfaces, black ink, blue accent, white selected-sidebar text, and never restore dark-mode contrast failures.
+- **Insight:** Argue is light-only; use light surfaces, black ink, blue accent, white selected-sidebar text, and never restore dark-mode contrast failures.
 - **Confidence:** 10/10
 - **Source:** manual
 - **Files:** apps/web/src/app/globals.css, apps/web/src/components/app-sidebar.tsx

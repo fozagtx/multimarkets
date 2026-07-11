@@ -52,7 +52,7 @@ const LandingNavbar = React.forwardRef<HTMLElement, NavbarProps>(
         <NavbarBrand as={NextLink} href="/" className="max-w-fit gap-0">
           <BrandIcon size={48} className="shadow-sm" />
           <span className="ml-2.5 text-medium font-bold text-white drop-shadow-sm">
-            MultiMarkets
+            Argue
           </span>
         </NavbarBrand>
 

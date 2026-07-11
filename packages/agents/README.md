@@ -1,6 +1,6 @@
-# @multimarkets/agents
+# Argue agent runtime
 
-MultiMarkets multi-agent runtime: **ElizaOS-compatible character schema** + a **custom Master Agent orchestrator**.
+Argue multi-agent runtime: **ElizaOS-compatible character schema** + a **custom Master Agent orchestrator**.
 
 ## Decision
 

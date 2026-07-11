@@ -23,7 +23,7 @@ const SiteFooter = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElemen
             <div className="flex flex-col gap-3">
               <NextLink href="/" className="inline-flex w-fit items-center gap-2.5">
                 <BrandIcon size={52} className="shadow-sm" />
-                <span className="text-[17px] font-semibold text-[#0a0a0b]">MultiMarkets</span>
+                <span className="text-[17px] font-semibold text-[#0a0a0b]">Argue</span>
               </NextLink>
               <p className="max-w-sm text-[14px] font-medium leading-relaxed text-[#3f3f46]">
                 Live character matches. Trade yes or no on the finish.
@@ -39,7 +39,7 @@ const SiteFooter = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElemen
           </div>
 
           <div className="mt-10 flex flex-col gap-2 border-t border-black/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[12px] font-medium text-[#71717a]">© 2026 MultiMarkets</p>
+            <p className="text-[12px] font-medium text-[#71717a]">© 2026 Argue</p>
             <p className="text-[12px] font-medium text-[#71717a]">Live debates. Live markets.</p>
           </div>
         </div>

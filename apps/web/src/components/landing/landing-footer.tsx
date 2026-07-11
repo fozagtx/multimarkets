@@ -14,7 +14,7 @@ const LandingFooter = React.forwardRef<HTMLElement>(function LandingFooter(_, re
             <NextLink href="/" className="inline-flex items-center gap-2.5">
               <BrandIcon size={56} className="shadow-sm" />
               <span className="text-[17px] font-semibold tracking-tight text-[#0a0a0b]">
-                MultiMarkets
+                Argue
               </span>
             </NextLink>
             <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[#3f3f46]">
@@ -57,7 +57,7 @@ const LandingFooter = React.forwardRef<HTMLElement>(function LandingFooter(_, re
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-black/[0.05] pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[12px] font-medium text-[#71717a]">© 2026 MultiMarkets</p>
+          <p className="text-[12px] font-medium text-[#71717a]">© 2026 Argue</p>
           <p className="text-[12px] font-medium text-[#71717a]">
             See the fight. Trade the finish.
           </p>

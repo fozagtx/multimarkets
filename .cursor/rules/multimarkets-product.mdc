@@ -1,9 +1,9 @@
 ---
-description: Persistent MultiMarkets product decisions and correction history
+description: Persistent Argue product decisions and correction history
 alwaysApply: true
 ---
 
-# MultiMarkets Product Decisions
+# Argue Product Decisions
 
 - Keep `/` public. Every app route requires a connected wallet before rendering any product content; retain the requested deep link after connection.
 - App navigation must use Next client-side routing only. Never pass native `href` values to HeroUI sidebar list items when `router.push` owns selection.

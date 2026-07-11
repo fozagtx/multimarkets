@@ -152,7 +152,7 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
     });
   } catch {
     throw new Error(
-      "Can’t reach MultiMarkets right now. Check your connection and try again.",
+      "Can’t reach Argue right now. Check your connection and try again.",
     );
   }
 

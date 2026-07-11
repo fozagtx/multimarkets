@@ -39,7 +39,7 @@ export default function WalletAccessGate({ children }: { children: React.ReactNo
         </div>
         <h1 className="mt-5 text-xl font-bold tracking-tight">Connect to continue</h1>
         <p className="mt-2 text-sm font-medium leading-relaxed text-[#52525b]">
-          Connect your wallet to enter MultiMarkets.
+          Connect your wallet to enter Argue.
         </p>
 
         {!mounted ? (

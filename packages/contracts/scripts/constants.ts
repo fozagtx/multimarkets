@@ -1,5 +1,5 @@
 /**
- * HashKey Chain addresses and network constants for MultiMarkets.
+ * HashKey Chain addresses and network constants for Argue.
  */
 
 export const HASHKEY_MAINNET = {

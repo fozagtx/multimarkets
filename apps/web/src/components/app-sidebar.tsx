@@ -86,7 +86,7 @@ export default function AppSidebar({
             href="/markets"
             onClick={onNavigate}
             className="flex shrink-0 items-center"
-            aria-label="MultiMarkets home"
+            aria-label="Argue home"
           >
             <BrandIcon size={isCompact ? 36 : 40} className="shadow-sm" />
           </NextLink>
@@ -96,7 +96,7 @@ export default function AppSidebar({
               { "sr-only": isCompact },
             )}
           >
-            MultiMarkets
+            Argue
           </span>
         </div>
 

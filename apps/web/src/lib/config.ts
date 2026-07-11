@@ -1,5 +1,5 @@
 /**
- * MultiMarkets app config — source of truth in code.
+ * Argue app config — source of truth in code.
  * Deployed HashKey Testnet (133) · 2026-07-11
  * Do not put private keys here. Public addresses + public URLs only.
  */

@@ -523,27 +523,27 @@ export async function startServer(options?: {
 
   serve({ fetch: app.fetch, port, hostname }, (info) => {
     console.log(
-      `[@multimarkets/agents] listening on http://${hostname}:${info.port}`,
+      `[Argue agents] listening on http://${hostname}:${info.port}`,
     );
     console.log(
-      `[@multimarkets/agents] characters loaded: ${characterRegistry.size}`,
+      `[Argue agents] characters loaded: ${characterRegistry.size}`,
     );
     if (interruptedRooms > 0) {
       console.warn(
-        `[@multimarkets/agents] marked ${interruptedRooms} unfinished match(es) as interrupted after restart`,
+        `[Argue agents] marked ${interruptedRooms} unfinished match(es) as interrupted after restart`,
       );
     }
     try {
       const llm = resolveLlmConfig();
       console.log(
-        `[@multimarkets/agents] LLM: ${llm.provider} · model ${llm.model}`,
+        `[Argue agents] LLM: ${llm.provider} · model ${llm.model}`,
       );
     } catch (e) {
       const msg =
         e instanceof LlmConfigError
           ? e.message
           : "No LLM key configured (set OPENROUTER_API_KEY)";
-      console.warn(`[@multimarkets/agents] ${msg}`);
+      console.warn(`[Argue agents] ${msg}`);
     }
   });
 

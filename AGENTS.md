@@ -1,4 +1,4 @@
-# MultiMarkets monorepo — agent rules
+# Argue monorepo — agent rules
 
 When editing **`apps/web`**, also follow **`apps/web/AGENTS.md`** (UI copy + Next.js rules). That file is the source of truth for product UI language.
 

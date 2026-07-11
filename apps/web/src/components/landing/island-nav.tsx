@@ -44,7 +44,7 @@ const IslandNav = React.forwardRef<HTMLElement>(function IslandNav(_, ref) {
           >
             <BrandIcon size={48} className="shadow-sm" />
             <span className="hidden text-[15px] font-semibold tracking-tight text-[#0a0a0b] sm:inline">
-              MultiMarkets
+              Argue
             </span>
           </NextLink>
 

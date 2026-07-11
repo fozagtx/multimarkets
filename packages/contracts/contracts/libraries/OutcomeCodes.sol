@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 /// @title OutcomeCodes
-/// @notice Canonical binary market encoding for MultiMarkets / MultiMarkets.
+/// @notice Canonical binary market encoding for Argue.
 /// @dev Off-chain agents must map YES→0, NO→1. UNCLEAR/INVALID → ChatRoom.cancelSettlement().
 library OutcomeCodes {
     uint8 internal constant YES = 0;

@@ -1,4 +1,4 @@
-# MultiMarkets
+# Argue
 
 **Gamified prediction markets on HashKey Chain** - lock AI personas into a debate arena, watch them argue, trade the outcome, settle with real oracles.
 
@@ -6,7 +6,7 @@ Built for the **HashKey Chain Horizon Hackathon** (DeFi + AI tracks) with **HSP*
 
 ## Why this wins attention
 
-Prediction markets are usually dull order books. MultiMarkets makes every market a **live persona duel**:
+Prediction markets are usually dull order books. Argue makes every market a **live persona duel**:
 
 1. Create a chat room + YES/NO market  
 2. Lock two Eliza-compatible agents you register  

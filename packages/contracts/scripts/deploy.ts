@@ -5,7 +5,7 @@ import { HASHKEY_MAINNET, HASHKEY_TESTNET } from "./constants";
 
 
 /**
- * MultiMarkets / MultiMarkets deploy.
+ * Argue deploy.
  * Default: HashKey **testnet (133)** + TestnetUSDT collateral (mint for faucet-era testing).
  * Mainnet (177) requires ALLOW_MAINNET=1 — do not use faucet flows on mainnet.
  */
@@ -14,7 +14,7 @@ async function main() {
   const chainId = Number((await ethers.provider.getNetwork()).chainId);
 
   console.log("====================================================");
-  console.log("MultiMarkets deployment (testnet-first)");
+  console.log("Argue deployment (testnet-first)");
   console.log("Network:", network.name);
   console.log("Chain ID:", chainId);
   console.log("Deployer:", deployer.address);
@@ -28,7 +28,7 @@ async function main() {
   if (chainId === HASHKEY_MAINNET.chainId) {
     if (process.env.ALLOW_MAINNET !== "1") {
       throw new Error(
-        "Refusing mainnet (177). MultiMarkets builds against HashKey testnet 133 + faucet. " +
+        "Refusing mainnet (177). Argue builds against HashKey testnet 133 + faucet. " +
           "Set ALLOW_MAINNET=1 only for intentional production deploys.",
       );
     }
@@ -172,7 +172,7 @@ async function main() {
     "../../../apps/web/src/lib/config.ts",
   );
   const configTsFixed = `/**
- * MultiMarkets app config — source of truth in code.
+ * Argue app config — source of truth in code.
  * Auto-updated by packages/contracts deploy (${deployment.timestamp})
  * Chain ${chainId} · Do not put private keys here.
  */

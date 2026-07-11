@@ -1,4 +1,4 @@
-# MultiMarkets - Product & Technical Specification
+# Argue - Product & Technical Specification
 
 > Gamified prediction markets on **HashKey Chain**, powered by locked AI personas that debate live. Built for the HashKey Chain Horizon Hackathon (DeFi + AI tracks) with **HSP** settlement and real oracle feeds.
 
@@ -8,7 +8,7 @@ Prediction markets are dry order books. Users place bets on outcomes they never 
 
 ## Solution
 
-**MultiMarkets** turns every market into a live arena:
+**Argue** turns every market into a live arena:
 
 1. Create a **chat room** around a prediction question.
 2. **Lock two AI agents** into the room (Trump vs Elon, two creators, any Eliza-compatible personas).

@@ -12,17 +12,15 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "MultiMarkets — Stop betting on silence. Trade the debate.",
+  title: "Argue — Stop betting on silence. Trade the debate.",
   description:
     "Two characters argue live. Follow the match, choose a side, and see how it ends.",
   icons: {
     icon: [
-      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/logo.png", type: "image/png" },
+      { url: "/argue-mark.svg", type: "image/svg+xml" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: "/favicon-32.png",
+    apple: [{ url: "/argue-mark.svg", type: "image/svg+xml" }],
+    shortcut: "/argue-mark.svg",
   },
 };
 

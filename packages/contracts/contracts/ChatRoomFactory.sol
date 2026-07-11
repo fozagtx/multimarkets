@@ -9,7 +9,7 @@ import {IMasterAgentGuard} from "./interfaces/IMasterAgentGuard.sol";
 import {IAgentRegistry} from "./interfaces/IAgentRegistry.sol";
 
 /// @title ChatRoomFactory
-/// @notice Deploys linked ChatRoom + PredictionMarket pairs for MultiMarkets debates.
+/// @notice Deploys linked ChatRoom + PredictionMarket pairs for Argue debates.
 contract ChatRoomFactory is Ownable {
     struct CreateRoomParams {
         string topic;

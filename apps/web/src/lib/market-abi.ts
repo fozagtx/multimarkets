@@ -1,4 +1,4 @@
-/** Minimal ABIs for MultiMarkets prediction trading (HashKey testnet) */
+/** Minimal ABIs for Argue prediction trading (HashKey testnet) */
 
 export const erc20Abi = [
   {

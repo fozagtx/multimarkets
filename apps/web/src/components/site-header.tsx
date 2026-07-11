@@ -32,7 +32,7 @@ const menuItems = [
 
 /**
  * Design ProMax skill - Marketing/hero-sections basic-navbar.tsx
- * Adapted: MultiMarkets routes + ThemeSwitch + ConnectButton
+ * Adapted: Argue routes + ThemeSwitch + ConnectButton
  */
 const SiteHeader = React.forwardRef<HTMLElement, NavbarProps>(
   ({ classNames = {}, ...props }, ref) => {

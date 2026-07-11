@@ -6,11 +6,11 @@ import { hashkey, hashkeyTestnet } from "./chains";
 import { NETWORK, WALLETCONNECT_PROJECT_ID } from "./config";
 
 /**
- * MultiMarkets: HashKey testnet 133 first (from config.ts).
+ * Argue: HashKey testnet 133 first (from config.ts).
  * WalletConnect project id lives in config.ts if you need it — not .env.
  */
 export const config = getDefaultConfig({
-  appName: "MultiMarkets",
+  appName: "Argue",
   projectId: WALLETCONNECT_PROJECT_ID || "00000000000000000000000000000000",
   chains: [hashkeyTestnet, hashkey],
   ssr: true,

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * MultiMarkets landing
+ * Argue landing
  * Conversion framework (landing-page-rewrite) + Soft Structuralism craft
  * Copy: concrete, no tech slop
  */

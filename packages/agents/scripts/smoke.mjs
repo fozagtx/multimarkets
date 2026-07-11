@@ -45,7 +45,7 @@ async function json(path, init) {
 }
 
 async function main() {
-  console.log(`\n[@multimarkets/agents smoke] ${BASE}\n`);
+  console.log(`\n[Argue agents smoke] ${BASE}\n`);
 
   // SC-1 Health
   {

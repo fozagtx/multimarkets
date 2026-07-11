@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy MultiMarkets contracts to HashKey TESTNET (133)
+# Deploy Argue contracts to HashKey TESTNET (133)
 # and merge addresses into apps/web/.env.local
 #
 # SECURITY: Never put PRIVATE_KEY in .env or git.
@@ -33,7 +33,7 @@ fi
 # Only use PRIVATE_KEY if already set in THIS shell (not from file)
 if [[ -z "${PRIVATE_KEY:-}" ]]; then
   echo "===================================================="
-  echo " MultiMarkets → HashKey TESTNET (133)"
+  echo " Argue → HashKey TESTNET (133)"
   echo " Faucet: https://faucet.hsk.xyz/faucet"
   echo " RPC:    $HASHKEY_TESTNET_RPC"
   echo "===================================================="

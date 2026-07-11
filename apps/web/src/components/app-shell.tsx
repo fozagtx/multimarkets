@@ -52,7 +52,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </button>
             <NextLink href="/markets" className="flex items-center gap-2">
               <BrandIcon size={32} />
-              <span className="text-small font-bold text-foreground">MultiMarkets</span>
+              <span className="text-small font-bold text-foreground">Argue</span>
             </NextLink>
           </div>
           <WalletConnectHeader variant="light" />
