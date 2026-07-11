@@ -7,6 +7,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { loadCharacterFromDisk, validateCharacter } from "./character/loader.js";
 import { RoomRuntime } from "./room/RoomRuntime.js";
+import { RuntimeStore } from "./persistence/RuntimeStore.js";
 import { CharacterSchema, type Character } from "./types.js";
 import { resolveLlmConfig, LlmConfigError } from "./agents/PersonaAgent.js";
 import { z } from "zod";
@@ -15,7 +16,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_CHARACTERS_DIR = resolve(__dirname, "../characters");
 
 /** Load packages/agents/.env into process.env (does not override existing keys). */
-async function loadDotEnv(): Promise<void> {
+export async function loadDotEnv(): Promise<void> {
   const envPath = resolve(__dirname, "../.env");
   if (!existsSync(envPath)) return;
   try {
@@ -43,7 +44,8 @@ async function loadDotEnv(): Promise<void> {
 }
 
 const characterRegistry = new Map<string, Character>();
-const runtime = new RoomRuntime();
+let runtime = new RoomRuntime();
+let runtimeStore: RuntimeStore | null = null;
 
 const CreateRoomBody = z.object({
   /** Two lockable fighters — master is never in this list */
@@ -118,6 +120,13 @@ function getCharacterOrThrow(id: string): Character {
     );
   }
   return c;
+}
+
+function registerCharacter(character: Character): void {
+  const id = character.id;
+  if (!id) throw new Error("Character is missing an id");
+  characterRegistry.set(id, character);
+  characterRegistry.set(character.name.toLowerCase(), character);
 }
 
 export function createApp(): Hono {
@@ -267,8 +276,8 @@ export function createApp(): Hono {
       );
     }
     const character = validateCharacter(parsed.data);
-    characterRegistry.set(character.id!, character);
-    characterRegistry.set(character.name.toLowerCase(), character);
+    await runtimeStore?.saveCharacter(character);
+    registerCharacter(character);
     return c.json({ ok: true, id: character.id, name: character.name }, 201);
   });
 
@@ -312,7 +321,7 @@ export function createApp(): Hono {
       const masterCharacter = getCharacterOrThrow(masterId);
       const personas = ids.map((id) => getCharacterOrThrow(id));
 
-      const session = runtime.createRoom({
+      const session = await runtime.createRoom({
         config: {
           characterIds: ids,
           topic: parsed.data.topic,
@@ -342,7 +351,7 @@ export function createApp(): Hono {
     });
   });
 
-  app.post("/rooms/:id/start", (c) => {
+  app.post("/rooms/:id/start", async (c) => {
     try {
       // Fail fast before async loop if LLM is missing
       const llm = llmReadiness();
@@ -356,7 +365,7 @@ export function createApp(): Hono {
           503,
         );
       }
-      const session = runtime.startDebate(c.req.param("id"));
+      const session = await runtime.startDebate(c.req.param("id"));
       return c.json({ room: session });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -377,7 +386,7 @@ export function createApp(): Hono {
         ? String((body as { content: unknown }).content ?? "")
         : "";
     try {
-      const message = runtime.injectSystemNote(c.req.param("id"), content);
+      const message = await runtime.injectSystemNote(c.req.param("id"), content);
       const session = runtime.getRoom(c.req.param("id"));
       return c.json({ message, room: session }, 201);
     } catch (err) {
@@ -451,8 +460,16 @@ export async function startServer(options?: {
   charactersDir?: string;
 }): Promise<{ port: number; app: Hono }> {
   await loadDotEnv();
+  runtimeStore = RuntimeStore.connect();
+  await runtimeStore.migrate();
+  const interruptedRooms = await runtimeStore.markRunningRoomsInterrupted();
   const charactersDir = options?.charactersDir ?? DEFAULT_CHARACTERS_DIR;
   await loadBundledCharacters(charactersDir);
+  for (const character of await runtimeStore.loadCharacters()) {
+    registerCharacter(character);
+  }
+  runtime = new RoomRuntime(runtimeStore);
+  runtime.restoreRooms(await runtimeStore.loadRooms());
 
   const app = createApp();
   const port = options?.port ?? Number(process.env.PORT ?? 8787);
@@ -466,6 +483,11 @@ export async function startServer(options?: {
     console.log(
       `[@multimarkets/agents] characters loaded: ${characterRegistry.size}`,
     );
+    if (interruptedRooms > 0) {
+      console.warn(
+        `[@multimarkets/agents] marked ${interruptedRooms} unfinished match(es) as interrupted after restart`,
+      );
+    }
     try {
       const llm = resolveLlmConfig();
       console.log(

@@ -16,6 +16,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:migrate": "tsx src/migrate.ts",
     "smoke": "node scripts/smoke.mjs",
     "check:personality": "npm run build && node scripts/check-personality.mjs"
   },
@@ -25,6 +26,7 @@
   "dependencies": {
     "@hono/node-server": "^1.14.1",
     "hono": "^4.7.7",
+    "postgres": "^3.4.9",
     "zod": "^3.24.2"
   },
   "devDependencies": {

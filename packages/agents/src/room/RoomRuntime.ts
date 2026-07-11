@@ -4,6 +4,7 @@ import { MasterAgent } from "../master/MasterAgent.js";
 import { DebateSettler } from "../settlement/DebateSettler.js";
 import { withResolvedPersonality } from "../character/fetchPersona.js";
 import { EventBus } from "./EventBus.js";
+import type { RuntimeStore } from "../persistence/RuntimeStore.js";
 import type {
   AgentMessage,
   Character,
@@ -25,12 +26,21 @@ export interface CreateRoomOptions {
 export class RoomRuntime {
   readonly eventBus: EventBus;
   private readonly rooms = new Map<string, RoomHandle>();
+  private readonly recoveredRooms = new Map<string, RoomSession>();
+  private readonly store?: RuntimeStore;
 
-  constructor(eventBus?: EventBus) {
+  constructor(store?: RuntimeStore, eventBus?: EventBus) {
+    this.store = store;
     this.eventBus = eventBus ?? new EventBus();
   }
 
-  createRoom(options: CreateRoomOptions): RoomSession {
+  restoreRooms(sessions: RoomSession[]): void {
+    for (const session of sessions) {
+      this.recoveredRooms.set(session.id, cloneSession(session));
+    }
+  }
+
+  async createRoom(options: CreateRoomOptions): Promise<RoomSession> {
     const { config, characters, masterCharacter } = options;
     if (characters.length < 2) {
       throw new Error("createRoom requires at least two different characters");
@@ -89,20 +99,25 @@ export class RoomRuntime {
       abort: false,
     };
     this.rooms.set(id, handle);
+    await this.store?.createRoom(session);
     return cloneSession(session);
   }
 
   getRoom(id: string): RoomSession | null {
     const handle = this.rooms.get(id);
-    return handle ? cloneSession(handle.session) : null;
+    if (handle) return cloneSession(handle.session);
+    const recovered = this.recoveredRooms.get(id);
+    return recovered ? cloneSession(recovered) : null;
   }
 
   listRooms(): RoomSession[] {
-    return [...this.rooms.values()].map((h) => cloneSession(h.session));
+    const live = [...this.rooms.values()].map((h) => cloneSession(h.session));
+    const recovered = [...this.recoveredRooms.values()].map(cloneSession);
+    return [...live, ...recovered].sort((a, b) => b.createdAt - a.createdAt);
   }
 
   /** Start the debate loop asynchronously. Returns immediately. */
-  startDebate(roomId: string): RoomSession {
+  async startDebate(roomId: string): Promise<RoomSession> {
     const handle = this.rooms.get(roomId);
     if (!handle) throw new Error(`Room not found: ${roomId}`);
     if (handle.session.status === "running") {
@@ -115,6 +130,7 @@ export class RoomRuntime {
     handle.abort = false;
     handle.session.status = "running";
     handle.session.startedAt = Date.now();
+    await this.store?.saveRoom(handle.session);
     this.eventBus.emitEvent("debate_start", roomId, {
       topic: handle.session.config.topic,
       marketQuestion: handle.session.config.marketQuestion,
@@ -126,10 +142,18 @@ export class RoomRuntime {
       handle.session.status = "failed";
       handle.session.error = err instanceof Error ? err.message : String(err);
       handle.session.endedAt = Date.now();
-      this.eventBus.emitEvent("error", roomId, {
-        message: handle.session.error,
-      });
-      handle.master.dispose();
+      handle.session.currentSpeakerId = null;
+      return this.store
+        ?.saveRoom(handle.session)
+        .catch((persistError) => {
+          console.error("[agents] failed to persist room failure", persistError);
+        })
+        .finally(() => {
+          this.eventBus.emitEvent("error", roomId, {
+            message: handle.session.error,
+          });
+          handle.master.dispose();
+        });
     });
 
     return cloneSession(handle.session);
@@ -143,15 +167,16 @@ export class RoomRuntime {
     return cloneSession(handle.session);
   }
 
-  stopDebate(roomId: string): RoomSession {
+  async stopDebate(roomId: string): Promise<RoomSession> {
     const handle = this.rooms.get(roomId);
     if (!handle) throw new Error(`Room not found: ${roomId}`);
     handle.abort = true;
+    await this.store?.saveRoom(handle.session);
     return cloneSession(handle.session);
   }
 
   /** Host / spectator injects a system note into the live transcript. */
-  injectSystemNote(roomId: string, content: string): AgentMessage {
+  async injectSystemNote(roomId: string, content: string): Promise<AgentMessage> {
     const handle = this.rooms.get(roomId);
     if (!handle) throw new Error(`Room not found: ${roomId}`);
     const text = content.trim();
@@ -168,7 +193,7 @@ export class RoomRuntime {
       turn: handle.session.currentTurn,
       createdAt: Date.now(),
     };
-    this.pushMessage(handle, message);
+    await this.pushMessage(handle, message);
     return message;
   }
 
@@ -201,6 +226,7 @@ export class RoomRuntime {
 
         session.currentTurn += 1;
         session.currentSpeakerId = speakerId;
+        await this.store?.saveRoom(session);
         this.eventBus.emitEvent("turn_change", session.id, {
           turn: session.currentTurn,
           speakerId,
@@ -224,7 +250,7 @@ export class RoomRuntime {
         }
 
         if (message) {
-          this.pushMessage(handle, message);
+          await this.pushMessage(handle, message);
         }
 
         // Topic enforcement may inject a master note
@@ -235,7 +261,7 @@ export class RoomRuntime {
           turn: session.currentTurn,
         });
         if (redirect) {
-          this.pushMessage(handle, redirect);
+          await this.pushMessage(handle, redirect);
         }
       }
 
@@ -245,8 +271,9 @@ export class RoomRuntime {
     }
   }
 
-  private pushMessage(handle: RoomHandle, message: AgentMessage): void {
+  private async pushMessage(handle: RoomHandle, message: AgentMessage): Promise<void> {
     handle.session.messages.push(message);
+    await this.store?.appendMessage(message);
     this.eventBus.emitEvent("message", handle.session.id, message);
   }
 
@@ -269,6 +296,7 @@ export class RoomRuntime {
       status !== "failed"
     ) {
       session.status = "settling";
+      await this.store?.saveRoom(session);
       try {
         const settler = new DebateSettler({ eventBus: this.eventBus });
         const settlement = await settler.settle({
@@ -279,12 +307,14 @@ export class RoomRuntime {
           personas,
         });
         session.settlement = settlement;
+        await this.store?.saveRoom(session);
         this.eventBus.emitEvent("settlement_final", session.id, settlement);
       } catch (err) {
         session.error =
           err instanceof Error
             ? `Settlement failed: ${err.message}`
             : `Settlement failed: ${String(err)}`;
+        await this.store?.saveRoom(session);
         this.eventBus.emitEvent("error", session.id, {
           message: session.error,
         });
@@ -295,6 +325,7 @@ export class RoomRuntime {
     session.status = status === "failed" ? "failed" : "ended";
     session.endedAt = Date.now();
     session.currentSpeakerId = null;
+    await this.store?.saveRoom(session);
     master.dispose();
   }
 }

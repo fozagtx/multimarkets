@@ -9,6 +9,7 @@
     "clean": "hardhat clean",
     "deploy:testnet": "hardhat run scripts/deploy.ts --network hashkeyTestnet",
     "deploy:testnet:sync": "bash scripts/deploy-testnet.sh",
+    "probe:testnet": "hardhat run scripts/probe-testnet.ts --network hashkeyTestnet",
     "deploy:mainnet": "echo 'Refusing mainnet by default. Use ALLOW_MAINNET=1 npm run deploy:mainnet:force' && exit 1",
     "deploy:mainnet:force": "ALLOW_MAINNET=1 hardhat run scripts/deploy.ts --network hashkey",
     "node": "hardhat node",

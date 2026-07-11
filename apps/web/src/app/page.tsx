@@ -7,6 +7,7 @@
  */
 
 import React from "react";
+import Image from "next/image";
 import NextLink from "next/link";
 import { Accordion, AccordionItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
@@ -40,7 +41,19 @@ export default function HomePage() {
       {/* 1. Hero */}
       <section className="lp-container pb-8 pt-10 md:pb-12 md:pt-16">
         <div className="lp-bezel mx-auto max-w-5xl">
-          <div className="lp-bezel-core px-5 pb-0 pt-12 sm:px-10 sm:pt-16 md:px-14 md:pt-20">
+          <div className="lp-bezel-core relative isolate overflow-hidden px-5 pb-0 pt-12 sm:px-10 sm:pt-16 md:px-14 md:pt-20">
+            <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+              <Image
+                src="/bg.jpeg"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-white/80 to-white/95" />
+            </div>
+
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
               <Reveal>
                 <span className="lp-eyebrow">

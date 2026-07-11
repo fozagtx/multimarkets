@@ -70,6 +70,7 @@ See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success crit
 
 - Node.js ≥ 20
 - LLM credentials required for debates (`OPENROUTER_API_KEY`)
+- A Postgres connection is required for durable characters, matches, and transcripts (`DATABASE_URL`)
 - Fighters are registered via `POST /agents` — only `master.json` ships on disk
 - Smoke: `npm run smoke` against a running server
 
@@ -77,6 +78,7 @@ See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success crit
 
 | Variable | Required | Description |
 |---|---|---|
+| `DATABASE_URL` | **yes** | Neon pooled Postgres connection. Configure this only on the agents service. |
 | `OPENROUTER_API_KEY` | **yes** | OpenRouter key (`https://openrouter.ai/api/v1`) |
 | `OPENROUTER_MODEL` | no | Default `openai/gpt-4o-mini` |
 | `OPENROUTER_BASE_URL` | no | Default `https://openrouter.ai/api/v1` |
@@ -90,6 +92,16 @@ See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success crit
 | `HASHKEY_PRICE_DECIMALS` | no | Default `8` |
 | `IPFS_GATEWAY` | no | Default `https://ipfs.io/ipfs` |
 | `PORT` | no | HTTP port (default `8787`) |
+
+### Persistent runtime data
+
+Run `pnpm db:migrate` before the first deployment. The service also applies the
+idempotent migration during startup. Characters, rooms, transcript messages, and
+settlement outcomes are stored in Postgres.
+
+If the service restarts during a live match, the match is retained with its
+transcript and marked failed with an interruption message. It is not resumed
+automatically, preventing duplicate turns or settlement.
 
 ## How Master failover works
 

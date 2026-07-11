@@ -87,6 +87,21 @@ This deploys registry, guard, oracle, factory, and TestnetUSDT, and **merges con
 
 Fund the deployer with test HSK first: https://faucet.hsk.xyz/faucet
 
+### Verify the deployed testnet contracts
+
+```bash
+npm run probe:testnet
+```
+
+The probe is read-only. It verifies bytecode at every recorded address, confirms
+the RPC chain ID, and checks that the factory points to the configured registry
+and master guard.
+
+The current product runtime is still off-chain: it does not register characters,
+create factory rooms, record a room's `PredictionMarket` address, or submit
+on-chain settlement. The deployed contracts therefore pass deployment checks,
+but on-chain trading must remain unavailable until that integration is built.
+
 ### HashKey mainnet (chainId 177)
 
 ```bash
