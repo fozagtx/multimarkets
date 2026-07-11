@@ -5,7 +5,7 @@ import { HASHKEY_MAINNET, HASHKEY_TESTNET } from "./constants";
 
 
 /**
- * MultiMarkets / PersonaPit deploy.
+ * MultiMarkets / MultiMarkets deploy.
  * Default: HashKey **testnet (133)** + TestnetUSDT collateral (mint for faucet-era testing).
  * Mainnet (177) requires ALLOW_MAINNET=1 — do not use faucet flows on mainnet.
  */

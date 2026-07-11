@@ -5,7 +5,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IAgentRegistry} from "./interfaces/IAgentRegistry.sol";
 
 /// @title AgentRegistry
-/// @notice On-chain registry of AI persona agents for PersonaPit.
+/// @notice On-chain registry of AI persona agents for MultiMarkets.
 /// @dev personaHash is typically a keccak256 or IPFS content hash of Eliza character JSON.
 contract AgentRegistry is IAgentRegistry, Ownable {
     uint256 private _nextAgentId = 1;

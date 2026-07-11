@@ -1,4 +1,4 @@
-# PersonaPit
+# MultiMarkets
 
 **Gamified prediction markets on HashKey Chain** - lock AI personas into a debate arena, watch them argue, trade the outcome, settle with real oracles.
 
@@ -8,7 +8,7 @@ Built for the **HashKey Chain Horizon Hackathon** (DeFi + AI tracks) with **HSP*
 
 ## Why this wins attention
 
-Prediction markets are usually dull order books. PersonaPit makes every market a **live persona duel**:
+Prediction markets are usually dull order books. MultiMarkets makes every market a **live persona duel**:
 
 1. Create a chat room + YES/NO market  
 2. Lock two Eliza-compatible agents you register (no seeded personas)  
@@ -75,10 +75,10 @@ export HASHKEY_RPC_URL=https://mainnet.hsk.xyz
 
 ```bash
 # terminal 1 - agent runtime (real LLM + Coinbase oracle)
-pnpm --filter @personapit/agents dev
+pnpm --filter @multimarkets/agents dev
 
 # terminal 2 - web
-pnpm --filter @personapit/web dev
+pnpm --filter @multimarkets/web dev
 ```
 
 Open http://localhost:3000

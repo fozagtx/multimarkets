@@ -1,8 +1,8 @@
 {
-  "name": "@personapit/contracts",
+  "name": "@multimarkets/contracts",
   "version": "1.0.0",
   "private": true,
-  "description": "PersonaPit Solidity smart contracts - gamified prediction markets on HashKey Chain",
+  "description": "MultiMarkets Solidity smart contracts - gamified prediction markets on HashKey Chain",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",

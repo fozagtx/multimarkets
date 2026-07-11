@@ -12,7 +12,7 @@ import {
 } from "../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
-describe("PersonaPit", function () {
+describe("MultiMarkets", function () {
   let owner: HardhatEthersSigner;
   let master: HardhatEthersSigner;
   let backup: HardhatEthersSigner;

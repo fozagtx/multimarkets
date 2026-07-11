@@ -1,6 +1,6 @@
 # Agents runtime — requirements & success criteria
 
-**Package:** `@personapit/agents` (`packages/agents`)  
+**Package:** `@multimarkets/agents` (`packages/agents`)  
 **Goal:** Live multi-character debates with real LLM replies. **No mock chat. No seeded fighters.**
 
 ---

@@ -1,6 +1,6 @@
-# @personapit/agents
+# @multimarkets/agents
 
-PersonaPit multi-agent runtime: **ElizaOS-compatible character schema** + a **custom Master Agent orchestrator**.
+MultiMarkets multi-agent runtime: **ElizaOS-compatible character schema** + a **custom Master Agent orchestrator**.
 
 ## Decision
 
@@ -155,7 +155,7 @@ import {
   RoomRuntime,
   loadCharacterFromDisk,
   fetchCoinbaseSpotPrice,
-} from "@personapit/agents";
+} from "@multimarkets/agents";
 
 const master = await loadCharacterFromDisk("./characters/master.json");
 // Register personas via POST /agents — none are seeded on disk.

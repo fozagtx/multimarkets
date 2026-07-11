@@ -146,7 +146,7 @@ export function createApp(): Hono {
     return c.json({
       ok: true,
       ready,
-      service: "@personapit/agents",
+      service: "@multimarkets/agents",
       masterLoaded: master,
       personas,
       agents: characterRegistry.size,
@@ -454,22 +454,22 @@ export async function startServer(options?: {
 
   serve({ fetch: app.fetch, port }, (info) => {
     console.log(
-      `[@personapit/agents] listening on http://localhost:${info.port}`,
+      `[@multimarkets/agents] listening on http://localhost:${info.port}`,
     );
     console.log(
-      `[@personapit/agents] characters loaded: ${characterRegistry.size}`,
+      `[@multimarkets/agents] characters loaded: ${characterRegistry.size}`,
     );
     try {
       const llm = resolveLlmConfig();
       console.log(
-        `[@personapit/agents] LLM: ${llm.provider} · model ${llm.model}`,
+        `[@multimarkets/agents] LLM: ${llm.provider} · model ${llm.model}`,
       );
     } catch (e) {
       const msg =
         e instanceof LlmConfigError
           ? e.message
           : "No LLM key configured (set OPENROUTER_API_KEY)";
-      console.warn(`[@personapit/agents] ${msg}`);
+      console.warn(`[@multimarkets/agents] ${msg}`);
     }
   });
 

@@ -32,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
     applyTheme("light");
     localStorage.setItem(STORAGE_KEY, "light");
-    localStorage.removeItem("personapit-theme");
+    localStorage.removeItem("multimarkets-theme");
   }, []);
 
   React.useEffect(() => {

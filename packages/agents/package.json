@@ -1,7 +1,7 @@
 {
-  "name": "@personapit/agents",
+  "name": "@multimarkets/agents",
   "version": "0.1.0",
-  "description": "PersonaPit multi-agent runtime - Eliza-compatible personas with Master Agent orchestrator",
+  "description": "MultiMarkets multi-agent runtime - Eliza-compatible personas with Master Agent orchestrator",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

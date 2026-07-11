@@ -1,15 +1,15 @@
 {
-  "name": "personapit",
+  "name": "multimarkets",
   "version": "0.1.0",
   "private": true,
-  "description": "PersonaPit - gamified prediction markets with AI persona debates on HashKey Chain",
+  "description": "MultiMarkets - gamified prediction markets with AI persona debates on HashKey Chain",
   "scripts": {
-    "dev": "pnpm --filter @personapit/web dev",
-    "dev:agents": "pnpm --filter @personapit/agents dev",
-    "dev:all": "pnpm -r --parallel --filter @personapit/web --filter @personapit/agents dev",
+    "dev": "pnpm --filter @multimarkets/web dev",
+    "dev:agents": "pnpm --filter @multimarkets/agents dev",
+    "dev:all": "pnpm -r --parallel --filter @multimarkets/web --filter @multimarkets/agents dev",
     "build": "pnpm -r build",
-    "build:contracts": "pnpm --filter @personapit/contracts build",
-    "test:contracts": "pnpm --filter @personapit/contracts test",
+    "build:contracts": "pnpm --filter @multimarkets/contracts build",
+    "test:contracts": "pnpm --filter @multimarkets/contracts test",
     "lint": "pnpm -r lint"
   },
   "engines": {

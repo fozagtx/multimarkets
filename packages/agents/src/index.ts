@@ -1,4 +1,4 @@
-/** @personapit/agents - public API */
+/** @multimarkets/agents - public API */
 
 export {
   CharacterSchema,

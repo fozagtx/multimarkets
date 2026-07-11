@@ -1,5 +1,5 @@
 /**
- * HashKey Chain addresses and network constants for PersonaPit.
+ * HashKey Chain addresses and network constants for MultiMarkets.
  */
 
 export const HASHKEY_MAINNET = {
