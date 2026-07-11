@@ -84,19 +84,14 @@ export default function MarketsPage() {
       )}
 
       {!loading && !error && rooms.length === 0 && (
-        <div className="lp-bezel">
-          <div className="lp-bezel-core flex flex-col items-start gap-3 p-6 sm:p-8">
-            <p className="text-[15px] font-semibold text-[#0a0a0b]">No markets yet</p>
-            <p className="text-[13px] font-medium text-[#52525b]">
-              Create a match with two characters to open a market.
-            </p>
-            <NextLink
-              href="/create"
-              className="inline-flex h-10 items-center rounded-full bg-[#0a0a0b] px-4 text-[13px] font-semibold text-white"
-            >
-              <span className="text-white">Create</span>
-            </NextLink>
-          </div>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-24">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#f4f4f5] text-[#a1a1aa]">
+            <Icon icon="solar:chart-2-linear" width={32} />
+          </span>
+          <p className="mt-4 text-[14px] font-semibold text-[#0a0a0b]">No markets yet</p>
+          <p className="mt-1 text-[13px] font-medium text-[#71717a]">
+            Create a match with two characters to open a market.
+          </p>
         </div>
       )}
 

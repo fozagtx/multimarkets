@@ -49,7 +49,6 @@ export const CONTRACTS = {
   collateralToken: CONFIG_CONTRACTS.collateralToken as `0x${string}`,
   coinbaseOracleAdapter: CONFIG_CONTRACTS.coinbaseOracleAdapter as `0x${string}`,
   masterAgentGuard: CONFIG_CONTRACTS.masterAgentGuard as `0x${string}`,
-  demoChatRoom: CONFIG_CONTRACTS.demoChatRoom as `0x${string}`,
   testnetUsdt: CONFIG_CONTRACTS.testnetUsdt as `0x${string}`,
 };
 

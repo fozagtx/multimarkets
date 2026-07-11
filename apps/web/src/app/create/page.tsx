@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Create arena — same Soft Structuralism DNA as dashboard (shell from AppChrome)
+ * Create arena — compact form, no oversized card shell
  */
 
 import React from "react";
@@ -113,202 +113,176 @@ export default function CreatePage() {
   };
 
   const fieldClass = {
-    label: "text-[13px] font-semibold text-[#0a0a0b]",
-    input: "text-[#0a0a0b] placeholder:text-[#a1a1aa]",
+    label: "text-[12px] font-semibold text-[#0a0a0b]",
+    input: "text-[13px] text-[#0a0a0b] placeholder:text-[#a1a1aa]",
     inputWrapper:
-      "border border-black/[0.08] bg-white shadow-none data-[hover=true]:bg-white group-data-[focus=true]:border-[#5B7CFA]/40",
-    description: "text-[12px] font-medium text-[#71717a]",
+      "min-h-10 border border-black/[0.08] bg-white shadow-none data-[hover=true]:bg-white group-data-[focus=true]:border-[#5B7CFA]/40",
+    description: "text-[11px] font-medium text-[#71717a]",
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <Reveal className="mb-8 flex flex-col gap-5 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-xl">
+    <div className="mx-auto w-full max-w-xl">
+      <Reveal className="mb-5 flex items-end justify-between gap-3">
+        <div>
           <span className="lp-eyebrow">
             <span className="h-1.5 w-1.5 rounded-full bg-[#5B7CFA]" />
             Create
           </span>
-          <h1 className="mt-3 text-[clamp(1.75rem,3.5vw,2.35rem)] font-bold tracking-[-0.03em] text-[#0a0a0b]">
+          <h1 className="mt-2 text-[1.5rem] font-bold tracking-[-0.03em] text-[#0a0a0b] sm:text-[1.75rem]">
             Open a match
           </h1>
-          <p className="mt-2 text-[14px] font-medium leading-relaxed text-[#3f3f46] sm:text-[15px]">
-            {autoStart
-              ? "Pick two characters and a yes/no question. The debate starts when you create."
-              : "Pick two characters and a yes/no question. Start when you are ready."}
+          <p className="mt-1 text-[13px] font-medium text-[#3f3f46]">
+            Two characters, one yes/no question.
           </p>
         </div>
         <NextLink
           href="/markets"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3.5 py-2 text-[12px] font-semibold text-[#0a0a0b] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#fafafa] active:scale-[0.98]"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-black/[0.08] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#0a0a0b] hover:bg-[#fafafa]"
         >
-          <Icon icon="solar:arrow-left-linear" width={15} className="text-[#0a0a0b]" />
+          <Icon icon="solar:arrow-left-linear" width={14} />
           Markets
         </NextLink>
       </Reveal>
 
-      <Reveal delay={0.05}>
-        <div className="lp-bezel">
-          <div className="lp-bezel-core p-4 sm:p-6 md:p-7">
-            <div className="mb-6 flex flex-wrap items-center gap-2">
-              <h2 className="text-lg font-semibold tracking-tight text-[#0a0a0b]">Match setup</h2>
-              <span className="rounded-full bg-[#5B7CFA]/10 px-2.5 py-1 text-[11px] font-semibold text-[#5B7CFA] ring-1 ring-[#5B7CFA]/20">
-                New arena
+      <Reveal delay={0.04}>
+        <div className="flex flex-col gap-3.5">
+          {!isConnected && (
+            <p className="text-[12px] font-medium text-[#71717a]">
+              Wallet optional to watch. Connect when you want to trade.
+            </p>
+          )}
+
+          {loadingAgents ? (
+            <p className="text-[13px] font-medium text-[#52525b]">Loading characters…</p>
+          ) : agents.length < 2 ? (
+            <p className="rounded-xl bg-[#fffbeb] px-3 py-2 text-[12px] font-medium text-[#92400e]">
+              Need two characters.{" "}
+              <NextLink href="/agents" className="font-semibold text-[#0a0a0b] underline">
+                Add them
+              </NextLink>{" "}
+              first.
+            </p>
+          ) : null}
+
+          <Input
+            label="Topic"
+            labelPlacement="outside"
+            placeholder="AI regulation vs open markets"
+            value={topic}
+            onValueChange={setTopic}
+            variant="bordered"
+            size="sm"
+            classNames={fieldClass}
+          />
+
+          <Textarea
+            label="What are people betting on?"
+            labelPlacement="outside"
+            description="Yes or no only."
+            placeholder="Will side A admit regulation slows AI by the end of the match?"
+            value={marketQuestion}
+            onValueChange={setMarketQuestion}
+            variant="bordered"
+            minRows={2}
+            maxRows={3}
+            classNames={fieldClass}
+          />
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Select
+              label="Character A"
+              labelPlacement="outside"
+              placeholder="Select"
+              selectedKeys={agentAId ? new Set([agentAId]) : new Set()}
+              onSelectionChange={(keys) => {
+                const v = Array.from(keys)[0];
+                if (v) setAgentAId(String(v));
+              }}
+              isDisabled={loadingAgents || agents.length === 0}
+              variant="bordered"
+              size="sm"
+              classNames={{
+                label: fieldClass.label,
+                trigger: fieldClass.inputWrapper,
+                value: "text-[13px] text-[#0a0a0b]",
+              }}
+            >
+              {agents.map((a) => (
+                <SelectItem key={a.id!} textValue={a.name}>
+                  {a.name}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              label="Character B"
+              labelPlacement="outside"
+              placeholder="Select"
+              selectedKeys={agentBId ? new Set([agentBId]) : new Set()}
+              onSelectionChange={(keys) => {
+                const v = Array.from(keys)[0];
+                if (v) setAgentBId(String(v));
+              }}
+              isDisabled={loadingAgents || agents.length === 0}
+              variant="bordered"
+              size="sm"
+              classNames={{
+                label: fieldClass.label,
+                trigger: fieldClass.inputWrapper,
+                value: "text-[13px] text-[#0a0a0b]",
+              }}
+            >
+              {agents.map((a) => (
+                <SelectItem key={a.id!} textValue={a.name}>
+                  {a.name}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-[1fr_auto] items-end gap-3">
+            <Input
+              type="number"
+              label="Max turns"
+              labelPlacement="outside"
+              min={4}
+              max={40}
+              value={maxTurns}
+              onValueChange={setMaxTurns}
+              variant="bordered"
+              size="sm"
+              classNames={fieldClass}
+            />
+            <div className="flex h-10 items-center gap-2 pb-0.5">
+              <Switch isSelected={autoStart} onValueChange={setAutoStart} size="sm" color="success" />
+              <span className="whitespace-nowrap text-[12px] font-semibold text-[#0a0a0b]">
+                Start now
               </span>
             </div>
-
-            <div className="flex flex-col gap-5">
-              {!isConnected && (
-                <div className="rounded-2xl border border-black/[0.06] bg-[#f4f4f5] px-4 py-3 text-[13px] font-medium text-[#3f3f46]">
-                  You can open a match without a wallet. Connect from the sidebar when you want to
-                  trade.
-                </div>
-              )}
-
-              {loadingAgents ? (
-                <p className="text-[14px] font-medium text-[#52525b]">Loading characters…</p>
-              ) : agents.length < 2 ? (
-                <div className="rounded-2xl border border-[#fde68a] bg-[#fffbeb] px-4 py-3 text-[13px] font-medium text-[#92400e]">
-                  You need two characters.{" "}
-                  <NextLink href="/agents" className="font-semibold text-[#0a0a0b] underline">
-                    Add characters
-                  </NextLink>{" "}
-                  first, then come back.
-                </div>
-              ) : null}
-
-              <Input
-                label="Topic"
-                labelPlacement="outside"
-                placeholder="AI regulation vs open markets"
-                value={topic}
-                onValueChange={setTopic}
-                variant="bordered"
-                classNames={fieldClass}
-              />
-
-              <Textarea
-                label="What are people betting on?"
-                labelPlacement="outside"
-                description="Keep it yes or no. Clear questions get better markets."
-                placeholder="Will side A admit regulation slows AI by the end of the match?"
-                value={marketQuestion}
-                onValueChange={setMarketQuestion}
-                variant="bordered"
-                minRows={3}
-                classNames={fieldClass}
-              />
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Select
-                  label="Character A"
-                  labelPlacement="outside"
-                  placeholder="Select character"
-                  selectedKeys={agentAId ? new Set([agentAId]) : new Set()}
-                  onSelectionChange={(keys) => {
-                    const v = Array.from(keys)[0];
-                    if (v) setAgentAId(String(v));
-                  }}
-                  isDisabled={loadingAgents || agents.length === 0}
-                  variant="bordered"
-                  classNames={{
-                    label: fieldClass.label,
-                    trigger: fieldClass.inputWrapper,
-                    value: "text-[#0a0a0b]",
-                  }}
-                >
-                  {agents.map((a) => (
-                    <SelectItem key={a.id!} textValue={a.name}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  label="Character B"
-                  labelPlacement="outside"
-                  placeholder="Select character"
-                  selectedKeys={agentBId ? new Set([agentBId]) : new Set()}
-                  onSelectionChange={(keys) => {
-                    const v = Array.from(keys)[0];
-                    if (v) setAgentBId(String(v));
-                  }}
-                  isDisabled={loadingAgents || agents.length === 0}
-                  variant="bordered"
-                  classNames={{
-                    label: fieldClass.label,
-                    trigger: fieldClass.inputWrapper,
-                    value: "text-[#0a0a0b]",
-                  }}
-                >
-                  {agents.map((a) => (
-                    <SelectItem key={a.id!} textValue={a.name}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-
-              {(agentA || agentB) && (
-                <div className="rounded-2xl bg-[#f4f4f5] px-4 py-3 text-[13px] font-medium text-[#3f3f46]">
-                  <span className="font-semibold text-[#0a0a0b]">
-                    {agentA?.name ?? "?"} vs {agentB?.name ?? "?"}
-                  </span>
-                  <span> · ready to open</span>
-                </div>
-              )}
-
-              <Input
-                type="number"
-                label="Max turns"
-                labelPlacement="outside"
-                min={4}
-                max={40}
-                value={maxTurns}
-                onValueChange={setMaxTurns}
-                variant="bordered"
-                classNames={fieldClass}
-              />
-
-              <div className="flex items-center justify-between rounded-2xl border border-black/[0.06] bg-[#f4f4f5] px-4 py-3">
-                <div>
-                  <p className="text-[13px] font-semibold text-[#0a0a0b]">
-                    Start as soon as I create
-                  </p>
-                  <p className="text-[12px] font-medium text-[#52525b]">
-                    The match begins the moment the room opens
-                  </p>
-                </div>
-                <Switch isSelected={autoStart} onValueChange={setAutoStart} color="success" />
-              </div>
-
-              {error && (
-                <p className="rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="button"
-                disabled={submitting || loadingAgents || agents.length < 2}
-                onClick={() => void onSubmit()}
-                className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#18181b] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? (
-                  <span className="text-white">Working…</span>
-                ) : (
-                  <>
-                    <Icon icon="solar:play-bold" width={18} className="text-white" />
-                    <span className="text-white">
-                      {autoStart ? "Create and start" : "Create arena"}
-                    </span>
-                  </>
-                )}
-              </button>
-
-              <p className="text-[12px] font-medium leading-relaxed text-[#71717a]">
-                Characters take turns live. If something goes wrong, you’ll see a clear error.
-              </p>
-            </div>
           </div>
+
+          {error && (
+            <p className="rounded-xl bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="button"
+            disabled={submitting || loadingAgents || agents.length < 2}
+            onClick={() => void onSubmit()}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] px-5 text-[14px] font-semibold text-white hover:bg-[#18181b] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? (
+              <span className="text-white">Working…</span>
+            ) : (
+              <>
+                <Icon icon="solar:play-bold" width={16} className="text-white" />
+                <span className="text-white">
+                  {autoStart ? "Create and start" : "Create arena"}
+                </span>
+              </>
+            )}
+          </button>
         </div>
       </Reveal>
     </div>

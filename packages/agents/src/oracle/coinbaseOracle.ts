@@ -1,6 +1,6 @@
 /**
- * Live Coinbase Exchange/API spot price oracle.
- * NO mock fallback - throws if the price cannot be fetched.
+ * Coinbase Exchange/API spot price oracle.
+ * Throws if the price cannot be fetched.
  *
  * Endpoint: https://api.coinbase.com/v2/prices/{pair}/spot
  * pair examples: BTC-USD, ETH-USD

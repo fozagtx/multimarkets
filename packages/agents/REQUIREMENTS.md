@@ -1,7 +1,7 @@
 # Agents runtime — requirements & success criteria
 
 **Package:** `@multimarkets/agents` (`packages/agents`)  
-**Goal:** Live multi-character debates with real LLM replies. **No mock chat. No seeded fighters.**
+**Goal:** Live multi-character debates with LLM replies. Fighters are user-registered only.
 
 ---
 
@@ -9,12 +9,12 @@
 
 | ID | Requirement |
 |----|-------------|
-| R-1 | Server loads **only** `characters/master.json` as the referee. No Trump/Elon/demo fighters on disk. |
+| R-1 | Server loads **only** `characters/master.json` as the referee.
 | R-2 | Fighters exist **only** after `POST /agents` (user-registered). |
 | R-3 | `GET /agents` never returns `master`. |
 | R-4 | A room needs **≥ 2 different** character ids; `master` cannot be a fighter. |
 | R-5 | Debate messages come from a **real** OpenAI-compatible LLM (`OPENROUTER_API_KEY` preferred, else xAI/OpenAI). |
-| R-6 | Missing LLM key → **clear error** on start (`503` + `LLM_NOT_CONFIGURED`). Never invent lines. |
+| R-6 | Missing LLM key → **clear error** on start (`503` + `LLM_NOT_CONFIGURED`). |
 | R-7 | Host notes are real `system` messages on the transcript. |
 | R-8 | SSE stream emits room events (`snapshot`, `message`, `turn_change`, `debate_end`, …). |
 | R-9 | CORS allows the web app origin in dev/prod. |
@@ -61,7 +61,7 @@ NEXT_PUBLIC_AGENT_API_URL=http://localhost:8787   # or production URL
 | **SC-4** | Invalid room (1 fighter / master) rejected | smoke |
 | **SC-5** | Valid `POST /rooms` returns room id + status | smoke |
 | **SC-6** | Host note appears as system message | smoke |
-| **SC-7** | With LLM key: `POST …/start` yields **real** persona/master content within 120s (no mock) | smoke (skipped if `/ready` false) |
+| **SC-7** | With LLM key: `POST …/start` yields persona/master content within 120s | smoke (skipped if `/ready` false) |
 | **SC-8** | Without LLM key: `POST …/start` → **503** + clear message | manual / start path |
 | **SC-9** | `GET /ready` → **503** without key; **200** with key + master | curl |
 | **SC-10** | Typecheck clean | `npm run typecheck` |
@@ -106,13 +106,13 @@ Expected with key: SC-7 pass (live model call — not free).
 
 ---
 
-## 6. Failure modes (no mocks)
+## 6. Failure modes
 
 | Symptom | Cause | Fix |
 |---------|--------|-----|
 | Start 503 `LLM_NOT_CONFIGURED` | Missing key | Set `OPENROUTER_API_KEY`, restart agents |
 | Create 400 unknown character | Id not registered | Register via UI Characters or `POST /agents` |
-| Empty character list | By design | Users add characters; no seed fighters |
+| Empty character list | By design | Users add characters |
 | Room failed mid-debate | Provider error / timeout | Check OpenRouter dashboard, model id, billing |
 | CORS errors from Next | Origin blocked | Ensure agents CORS allows web origin |
 
@@ -120,6 +120,6 @@ Expected with key: SC-7 pass (live model call — not free).
 
 ## 7. Explicit non-goals
 
-- No simulated persona speech when LLM is down  
-- No preloaded celebrity fighters  
-- No fake settlement outcomes without a real vote path when settlement runs  
+- Persona speech when LLM is down  
+- Preloaded celebrity fighters  
+- Settlement outcomes without a vote path when settlement runs  

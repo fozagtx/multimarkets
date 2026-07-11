@@ -28,10 +28,8 @@ export const CONTRACTS = {
   /** TestnetUSDT (tUSDT) — mintable collateral */
   collateralToken: "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
   testnetUsdt: "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
-  /** Demo market for YES/NO trading in the UI */
-  predictionMarket: "0xAEA92ba5649f1A017f1a90ABd98715CEf3F5748D",
-  demoChatRoom: "0xD2e29385C759DE71C4D64Aa8835B80D034AF4d93",
-  demoRoomId: 1,
+  /** Set when a room market is created on-chain */
+  predictionMarket: "",
 } as const;
 
 /** Binary market outcomes (must match Solidity OutcomeCodes) */
@@ -40,15 +38,22 @@ export const OUTCOMES = {
   NO: 1,
 } as const;
 
-/** Agents HTTP runtime (local dev default) */
-export const AGENT_API_URL = "http://localhost:8787";
+/**
+ * Agents HTTP runtime.
+ * Local default; override with NEXT_PUBLIC_AGENT_API_URL on Railway/prod.
+ */
+export const AGENT_API_URL = (
+  process.env.NEXT_PUBLIC_AGENT_API_URL?.replace(/\/$/, "") ||
+  "http://localhost:8787"
+);
 
 /**
  * WalletConnect Cloud project id — public client id only (not a private key).
  * Leave empty to use RainbowKit without WC cloud features if unsupported.
  * Get one at https://cloud.walletconnect.com if needed.
  */
-export const WALLETCONNECT_PROJECT_ID = "";
+export const WALLETCONNECT_PROJECT_ID =
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim() || "";
 
 export type Address = `0x${string}`;
 

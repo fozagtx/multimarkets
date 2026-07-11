@@ -60,8 +60,7 @@ export class FailoverController {
   }
 
   /**
-   * Decide failover action for a failed agent.
-   * Does not generate mock speech - only control-plane decisions.
+   * Decide failover action for a failed agent (control-plane only).
    */
   decide(ctx: FailoverContext): FailoverAction {
     const attempt = (this.attempts.get(ctx.agentId) ?? 0) + 1;

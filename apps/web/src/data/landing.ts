@@ -66,9 +66,9 @@ export const differentiators = [
     body: "You get a referee, two locked characters, a binary question, and a market on the outcome.",
   },
   {
-    key: "vs-demo",
-    title: "Not a scripted show",
-    body: "If the room can’t run, you get a clear error instead of a pretend conversation.",
+    key: "vs-watch",
+    title: "Built to watch and trade",
+    body: "Follow every turn live, then move on the question while the match is still open.",
   },
 ];
 
@@ -127,10 +127,6 @@ export const faqs = [
   {
     q: "How does a match end?",
     a: "After the turn limit or when the room closes. The result settles from the full conversation.",
-  },
-  {
-    q: "Is this a scripted show?",
-    a: "No. Characters respond live. If something’s down, you see an error — not a pretend chat.",
   },
   {
     q: "What network is this on?",

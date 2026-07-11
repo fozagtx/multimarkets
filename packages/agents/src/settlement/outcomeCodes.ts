@@ -14,7 +14,7 @@ export type OnChainResolution =
 
 /**
  * Map agent debate settlement to ChatRoom.settle(uint8) or cancelSettlement().
- * Never invent an outcome for UNCLEAR/INVALID.
+ * UNCLEAR/INVALID must use cancelSettlement, not settle(0|1).
  */
 export function mapDebateOutcomeToOnChain(outcome: DebateOutcome): OnChainResolution {
   switch (outcome) {

@@ -81,5 +81,4 @@ Collateral on testnet: **TestnetUSDT / tUSDT** (`mint(address,amount)`) unless `
 ## 5. Explicit non-goals
 
 - Building or defaulting to **mainnet (177)**  
-- Fake debate speech for market resolution  
 - Resolving markets without `ChatRoom` state machine  

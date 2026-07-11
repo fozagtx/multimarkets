@@ -1,7 +1,7 @@
 /**
  * HashKey / APRO price feed via JSON-RPC eth_call when configured.
  * Requires HASHKEY_RPC_URL (or APRO_RPC_URL) and HASHKEY_PRICE_FEED_ADDRESS.
- * NO mock fallback - throws if not configured or call fails.
+ * Throws if not configured or call fails.
  */
 
 export class HashkeyOracleError extends Error {

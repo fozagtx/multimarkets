@@ -83,7 +83,7 @@ Get gas: [faucet.hsk.xyz](https://faucet.hsk.xyz/faucet)
 npm run deploy:testnet:sync
 ```
 
-This deploys registry, guard, oracle, factory, TestnetUSDT, a demo market, and **merges contract addresses into `apps/web/.env.local`** (never your private key).
+This deploys registry, guard, oracle, factory, and TestnetUSDT, and **merges contract addresses into `apps/web/.env.local`** (never your private key). Rooms and markets are created from the app, not at deploy time.
 
 Fund the deployer with test HSK first: https://faucet.hsk.xyz/faucet
 

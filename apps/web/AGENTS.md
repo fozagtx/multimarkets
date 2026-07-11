@@ -53,6 +53,6 @@ If you almost write a tech status line into the UI, **rewrite for a non-dev user
 
 - Soft Structuralism: light surfaces, black ink, blue accent `#5B7CFA`
 - App shell + ProMax-style sidebar for app routes; landing is separate
-- Characters are **user-registered only** (no demo Trump/Elon in the product list)
-- Live data from the agents package when running; never invent fake chat in the UI as if it were real
+- Characters are **user-registered only**
+- Live data from the agents package when running
 - Default chain: HashKey **testnet 133** (config/docs — not repeated as UI spam)

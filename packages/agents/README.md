@@ -36,7 +36,7 @@ room/EventBus.ts           message | heartbeat | agent_down | debate_end | …
         │
         ▼
 settlement/DebateSettler.ts  Master + personas vote → signed payload
-oracle/coinbaseOracle.ts     LIVE Coinbase spot (no mocks)
+oracle/coinbaseOracle.ts     Coinbase spot prices
 oracle/hashkeyOracle.ts      APRO price via eth_call when configured
 hsp/client.ts                HSP fee settlement HTTP client
 server.ts                    Hono HTTP + SSE API
@@ -50,7 +50,7 @@ packages/agents/
   tsconfig.json
   README.md
   characters/
-    master.json          # coordinator only — no seeded personas
+    master.json          # coordinator only
   src/
     types.ts
     index.ts
@@ -69,8 +69,8 @@ packages/agents/
 See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success criteria (SC-1…SC-10), and failure modes.
 
 - Node.js ≥ 20
-- **Real** LLM credentials — no simulated agent replies (`OPENROUTER_API_KEY` preferred)
-- **No seeded fighters** — only `master.json`; register personas via `POST /agents`
+- LLM credentials required for debates (`OPENROUTER_API_KEY` preferred)
+- Fighters are registered via `POST /agents` — only `master.json` ships on disk
 - Smoke: `npm run smoke` against a running server
 
 ## Environment variables
@@ -99,13 +99,11 @@ See **[REQUIREMENTS.md](./REQUIREMENTS.md)** for full requirements, success crit
 1. **Heartbeat** (`Heartbeat.ts`) polls agent status on an interval and emits `heartbeat` events. Transition into `down` / `failed` emits `agent_down`.
 2. During a persona turn, if `PersonaAgent.generateMessage` throws (missing key, provider error, timeout), **Failover** decides:
    - **`retry`** - up to `maxRetries` (default 3) with exponential backoff (`1s → 2s → 4s…`, capped). Agent is marked `restarting` then `ready`.
-   - **`monologue`** - after retries exhausted, the failed agent is disabled; room continues with remaining healthy agents. Master emits a **system/coordinator note** (not fake persona speech).
+   - **`monologue`** - after retries exhausted, the failed agent is disabled; room continues with remaining healthy agents. Master emits a system/coordinator note.
    - **`swap`** - optional if `allowSwap` and a backup persona id is provided.
    - **`abort`** - if no healthy personas remain, debate ends as failed.
 3. Failover actions are emitted on the EventBus as `failover` for SSE clients.
-4. Topic drift triggers a Master redirect message (real LLM call as coordinator).
-
-**Never** does the runtime invent persona replies or mock oracle prices.
+4. Topic drift triggers a Master redirect message (LLM call as coordinator).
 
 ## HTTP API
 
@@ -158,13 +156,12 @@ import {
 } from "@multimarkets/agents";
 
 const master = await loadCharacterFromDisk("./characters/master.json");
-// Register personas via POST /agents — none are seeded on disk.
+// Register personas via POST /agents
 
 const runtime = new RoomRuntime();
 // createRoom with your own Character objects after registering them
 // (characterIds must match registered agents)
 
-// Live price - throws if Coinbase is down
 const btc = await fetchCoinbaseSpotPrice("BTC-USD");
 ```
 
@@ -182,5 +179,4 @@ const btc = await fetchCoinbaseSpotPrice("BTC-USD");
 - TypeScript **strict**
 - **zod** validation for Character and API bodies
 - LLM via `fetch` to api.x.ai or OpenAI - **throws** if API key missing when generating
-- Coinbase oracle - **throws** on failure, never returns fake prices
-- No mock data, no demo fallbacks, no simulated agent replies
+- Coinbase oracle - **throws** on failure

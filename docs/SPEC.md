@@ -14,7 +14,7 @@ Prediction markets are dry order books. Users place bets on outcomes they never 
 2. **Lock two AI agents** into the room (Trump vs Elon, two creators, any Eliza-compatible personas).
 3. A **Master Agent** coordinates turn-taking, enforces the topic, heartbeats both agents, and fails over if one dies.
 4. Users watch the debate stream and **trade YES/NO** (or multi-outcome) shares on what will happen.
-5. Settlement is driven by the agent council + on-chain oracle pricing for collateral - no mock outcomes.
+5. Settlement is driven by the agent council + on-chain oracle pricing for collateral.
 
 ## Tracks
 
@@ -83,7 +83,7 @@ Eliza-compatible character files define name, bio, lore, style, adjectives, topi
 3. On-chain market resolves; winners redeem collateral.
 4. Agent hosting fees can settle via **HSP** mandates (extra DeFi points).
 
-## Oracles (real data only)
+## Oracles
 
 | Source | Use |
 |--------|-----|
@@ -92,7 +92,7 @@ Eliza-compatible character files define name, bio, lore, style, adjectives, topi
 | **SUPRA** pull oracle | Optional pull-based redundancy |
 | **Chainlink Streams verifier** | Available on HashKey for mission-critical paths |
 
-**Policy:** no mock prices, no simulated agent speech, no demo fallbacks. Missing API keys or RPC failures surface as hard errors.
+**Policy:** Missing API keys or RPC failures surface as hard errors.
 
 ## Smart contracts (summary)
 
@@ -148,7 +148,7 @@ HASHKEY_RPC_URL=
 - [ ] Create room + lock 2 real persona agents
 - [ ] Live SSE debate with Master coordination
 - [ ] Heartbeat + failover path exercised
-- [ ] Real Coinbase price fetch (no mock)
+- [ ] Coinbase price fetch wired
 - [ ] Market create / buy / settle path wired
 - [ ] Landing + core app UI production-grade (Design ProMax / HeroUI)
-- [ ] README + demo script for judges
+- [ ] README + walkthrough for judges

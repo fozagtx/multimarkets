@@ -103,52 +103,6 @@ async function main() {
   await authTx.wait();
   console.log("Factory authorized on MasterAgentGuard");
 
-  // 5. Bootstrap demo on-chain room + market (for UI trading while agent rooms are off-chain)
-  let demoRoom = "";
-  let demoMarket = "";
-  let demoRoomId = 0;
-  if (collateralAddress && process.env.SKIP_DEMO_MARKET !== "1") {
-    console.log("Bootstrap: register agents + create room/market…");
-    const regA = await agentRegistry.registerAgent(
-      ethers.id(`multimarkets-a-${Date.now()}`),
-      "Character A",
-      ["debate"],
-    );
-    await regA.wait();
-    const regB = await agentRegistry.registerAgent(
-      ethers.id(`multimarkets-b-${Date.now()}`),
-      "Character B",
-      ["debate"],
-    );
-    await regB.wait();
-
-    const now = Math.floor(Date.now() / 1000);
-    const createTx = await factory.createRoom({
-      topic: "MultiMarkets demo market",
-      agentA: 1n,
-      agentB: 2n,
-      masterAgent: deployer.address,
-      collateralToken: collateralAddress,
-      settlementAuthority: deployer.address,
-      backupMasters: [],
-      marketParams: {
-        marketType: 0, // Binary
-        outcomeCount: 2,
-        feeBps: 100,
-        minStake: ethers.parseUnits("1", 6),
-        openAt: BigInt(now),
-        closeAt: BigInt(now + 30 * 24 * 3600),
-      },
-    });
-    await createTx.wait();
-    demoRoomId = Number(await factory.nextRoomId()) - 1;
-    demoRoom = await factory.rooms(demoRoomId);
-    demoMarket = await factory.markets(demoRoomId);
-    console.log("Demo ChatRoom:", demoRoom);
-    console.log("Demo PredictionMarket:", demoMarket);
-    console.log("  Outcome: YES=0 NO=1 · master=deployer (can settle)");
-  }
-
   const webEnv: Record<string, string> = {
     NEXT_PUBLIC_HASHKEY_TESTNET_RPC: HASHKEY_TESTNET.rpc,
     NEXT_PUBLIC_CHAT_ROOM_FACTORY_ADDRESS: factoryAddress,
@@ -158,10 +112,6 @@ async function main() {
   };
   if (collateralAddress) {
     webEnv.NEXT_PUBLIC_COLLATERAL_TOKEN_ADDRESS = collateralAddress;
-  }
-  if (demoMarket) {
-    webEnv.NEXT_PUBLIC_PREDICTION_MARKET_ADDRESS = demoMarket;
-    webEnv.NEXT_PUBLIC_DEMO_CHAT_ROOM_ADDRESS = demoRoom;
   }
 
   const deployment = {
@@ -188,7 +138,6 @@ async function main() {
       ChatRoomFactory: factoryAddress,
       ...(testnetUsdtAddress ? { TestnetUSDT: testnetUsdtAddress } : {}),
       ...(collateralAddress ? { CollateralToken: collateralAddress } : {}),
-      ...(demoRoom ? { DemoChatRoom: demoRoom, DemoPredictionMarket: demoMarket, DemoRoomId: demoRoomId } : {}),
     },
     config: {
       coinbaseOracleSigner: coinbaseSigner,
@@ -246,9 +195,8 @@ export const CONTRACTS = {
   chatRoomFactory: "${factoryAddress}",
   collateralToken: "${collateralAddress || ""}",
   testnetUsdt: "${testnetUsdtAddress || collateralAddress || ""}",
-  predictionMarket: "${demoMarket || ""}",
-  demoChatRoom: "${demoRoom || ""}",
-  demoRoomId: ${demoRoomId || 0},
+  /** Set when a room market is created on-chain */
+  predictionMarket: "",
 } as const;
 
 export const OUTCOMES = {
@@ -256,10 +204,13 @@ export const OUTCOMES = {
   NO: 1,
 } as const;
 
-export const AGENT_API_URL = "http://localhost:8787";
+export const AGENT_API_URL = (
+  process.env.NEXT_PUBLIC_AGENT_API_URL?.replace(/\\/$/, "") ||
+  "http://localhost:8787"
+);
 
-/** Public WalletConnect project id only — set in this file if needed */
-export const WALLETCONNECT_PROJECT_ID = "";
+export const WALLETCONNECT_PROJECT_ID =
+  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim() || "";
 
 export type Address = \`0x\${string}\`;
 

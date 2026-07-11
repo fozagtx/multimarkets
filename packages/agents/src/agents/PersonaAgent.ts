@@ -210,7 +210,7 @@ export class PersonaAgent {
 
   /**
    * Generate an in-character debate message. Requires a real LLM API key.
-   * Throws if the key is missing or the provider fails - no simulated replies.
+   * Throws if the key is missing or the provider fails.
    */
   async generateMessage(params: {
     topic: string;

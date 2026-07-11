@@ -150,7 +150,7 @@ export class RoomRuntime {
     return cloneSession(handle.session);
   }
 
-  /** Host / spectator injects a system note into the live transcript (real message, not mock persona speech). */
+  /** Host / spectator injects a system note into the live transcript. */
   injectSystemNote(roomId: string, content: string): AgentMessage {
     const handle = this.rooms.get(roomId);
     if (!handle) throw new Error(`Room not found: ${roomId}`);

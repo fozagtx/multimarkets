@@ -97,7 +97,7 @@ function masterLoaded(): boolean {
 
 /**
  * Load only the Master coordinator from disk.
- * No seeded debate personas (Trump/Elon etc.) — register via POST /agents.
+ * Debate personas are registered via POST /agents.
  */
 async function loadBundledCharacters(dir: string): Promise<void> {
   const masterPath = resolve(dir, "master.json");
@@ -108,7 +108,6 @@ async function loadBundledCharacters(dir: string): Promise<void> {
   } catch (err) {
     console.error(`[agents] failed to load master.json:`, err);
   }
-  // Personas must be created at runtime via POST /agents — no seeded debaters.
 }
 
 function getCharacterOrThrow(id: string): Character {
@@ -345,7 +344,7 @@ export function createApp(): Hono {
 
   app.post("/rooms/:id/start", (c) => {
     try {
-      // Fail fast before async loop if LLM is missing (no silent mock replies)
+      // Fail fast before async loop if LLM is missing
       const llm = llmReadiness();
       if (!llm.configured) {
         return c.json(
@@ -457,10 +456,12 @@ export async function startServer(options?: {
 
   const app = createApp();
   const port = options?.port ?? Number(process.env.PORT ?? 8787);
+  // Railway / containers need 0.0.0.0; local default is fine either way
+  const hostname = process.env.HOST?.trim() || "0.0.0.0";
 
-  serve({ fetch: app.fetch, port }, (info) => {
+  serve({ fetch: app.fetch, port, hostname }, (info) => {
     console.log(
-      `[@multimarkets/agents] listening on http://localhost:${info.port}`,
+      `[@multimarkets/agents] listening on http://${hostname}:${info.port}`,
     );
     console.log(
       `[@multimarkets/agents] characters loaded: ${characterRegistry.size}`,

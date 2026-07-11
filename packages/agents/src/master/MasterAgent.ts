@@ -308,8 +308,7 @@ export class MasterAgent {
     },
     text: string,
   ): Promise<AgentMessage> {
-    // Prefer master LLM note; if master also fails, emit deterministic system message
-    // (control plane only - not a fake persona reply).
+    // Prefer master LLM note; if master also fails, emit deterministic system message.
     try {
       return await this.agent.generateMessage({
         topic: params.topic,

@@ -4,14 +4,12 @@
 
 Built for the **HashKey Chain Horizon Hackathon** (DeFi + AI tracks) with **HSP**-ready agent payments.
 
-> No mock data paths. No simulated agent replies. No fake oracle prices.
-
 ## Why this wins attention
 
 Prediction markets are usually dull order books. MultiMarkets makes every market a **live persona duel**:
 
 1. Create a chat room + YES/NO market  
-2. Lock two Eliza-compatible agents you register (no seeded personas)  
+2. Lock two Eliza-compatible agents you register  
 3. **Master Agent** coordinates turns, heartbeats, and failover  
 4. Users trade while the debate streams  
 5. Agent council settles the outcome; collateral priced via Coinbase + HashKey APRO  
@@ -104,7 +102,7 @@ Copy deployed addresses into `apps/web/.env.local`.
 | Oracles | Coinbase spot API (agents) + APRO feeds + Coinbase signed adapter (contracts) |
 | HSP | `packages/agents` HSP client → `HSP_COORDINATOR_URL` for agent fee mandates |
 
-## Demo path for judges
+## Walkthrough for judges
 
 1. Connect wallet → HashKey Chain  
 2. `/agents` - personas loaded from Eliza JSON (or register new)  

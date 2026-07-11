@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * No-mock smoke test against a running agents server.
+ * Smoke test against a running agents server.
  * Usage: node scripts/smoke.mjs [baseUrl]
  * Exit 0 = all required checks passed; 1 = failure.
  *
- * SC-1..SC-6 always run (no LLM required for create).
+ * SC-1..SC-6 always run (LLM not required for create).
  * SC-7 (start debate + first message) runs only when /ready is true.
  */
 
@@ -189,7 +189,7 @@ async function main() {
       if (!start.res.ok) {
         fail("SC-7", `start failed ${start.res.status} ${JSON.stringify(start.body).slice(0, 160)}`);
       } else {
-        // Poll for persona/master message (real LLM — no mock)
+        // Poll for persona/master message
         let sawSpeech = false;
         const deadline = Date.now() + 120_000;
         while (Date.now() < deadline) {
@@ -214,7 +214,7 @@ async function main() {
           await new Promise((r) => setTimeout(r, 2500));
         }
         if (sawSpeech) {
-          ok("SC-7", "start + real LLM message received (no mock)");
+          ok("SC-7", "start + LLM message received");
         } else if (!results.find((r) => r.id === "SC-7" && !r.pass)) {
           fail("SC-7", "timed out waiting for first live message");
         }

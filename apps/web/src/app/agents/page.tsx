@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Characters — Soft Structuralism DNA (shell from AppChrome)
+ * Characters — compact list + form (no oversized cards)
  */
 
 import React from "react";
@@ -21,7 +21,9 @@ function personalityFrom(character: Character): string {
 }
 
 const fieldClass =
-  "w-full rounded-xl border border-black/[0.08] bg-white px-3 py-2.5 text-[13px] font-medium text-[#0a0a0b] outline-none placeholder:text-[#a1a1aa] focus:border-[#5B7CFA]/40";
+  "w-full rounded-lg border border-black/[0.08] bg-white px-2.5 py-2 text-[13px] font-medium text-[#0a0a0b] outline-none placeholder:text-[#a1a1aa] focus:border-[#5B7CFA]/40";
+
+const labelClass = "text-[11px] font-semibold text-[#52525b]";
 
 export default function AgentsPage() {
   const [agents, setAgents] = React.useState<Character[]>([]);
@@ -72,8 +74,7 @@ export default function AgentsPage() {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean);
-      const typeLabel =
-        personalityType.trim() || adjList[0] || undefined;
+      const typeLabel = personalityType.trim() || adjList[0] || undefined;
       const created = await registerAgent({
         name: name.trim(),
         bio: bio
@@ -113,109 +114,83 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl">
-      <Reveal className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-xl">
+    <div className="mx-auto w-full max-w-3xl">
+      <Reveal className="mb-5 flex items-end justify-between gap-3">
+        <div>
           <span className="lp-eyebrow">
             <span className="h-1.5 w-1.5 rounded-full bg-[#5B7CFA]" />
             Characters
           </span>
-          <h1 className="mt-3 text-[clamp(1.75rem,3.5vw,2.35rem)] font-bold tracking-[-0.03em] text-[#0a0a0b]">
+          <h1 className="mt-2 text-[1.5rem] font-bold tracking-[-0.03em] text-[#0a0a0b] sm:text-[1.75rem]">
             Build the voices
           </h1>
-          <p className="mt-2 text-[14px] font-medium leading-relaxed text-[#3f3f46] sm:text-[15px]">
-            Add two characters, then create a match. The referee stays separate.
+          <p className="mt-1 text-[13px] font-medium text-[#3f3f46]">
+            Add two, then create a match.
           </p>
         </div>
         {agents.length >= 2 && (
           <NextLink
             href="/create"
-            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#0a0a0b] px-4 text-[13px] font-semibold text-white hover:bg-[#18181b]"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-[#0a0a0b] px-3.5 text-[12px] font-semibold text-white hover:bg-[#18181b]"
           >
-            <Icon icon="solar:play-bold" width={16} className="text-white" />
+            <Icon icon="solar:play-bold" width={14} className="text-white" />
             <span className="text-white">Create</span>
           </NextLink>
         )}
       </Reveal>
 
       {justCreated && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-medium text-emerald-900">
-          <span>
-            Saved <strong>{justCreated}</strong>
-            {agents.length >= 2
-              ? ". You can create a match now."
-              : ". Add one more character to start."}
-          </span>
-          {agents.length >= 2 && (
-            <NextLink
-              href="/create"
-              className="inline-flex h-8 items-center rounded-full bg-[#0a0a0b] px-3 text-[12px] font-semibold text-white"
-            >
-              <span className="text-white">Create</span>
-            </NextLink>
-          )}
-        </div>
+        <p className="mb-3 text-[12px] font-medium text-emerald-800">
+          Saved <strong>{justCreated}</strong>
+          {agents.length >= 2 ? " — ready to create a match." : " — add one more."}
+        </p>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="flex flex-col gap-3">
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Reveal delay={0.03} className="flex flex-col gap-1.5">
           {loading && (
-            <p className="text-[14px] font-medium text-[#52525b]">Loading characters…</p>
+            <p className="text-[13px] font-medium text-[#52525b]">Loading…</p>
           )}
           {error && (
-            <div className="rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[13px] font-medium text-[#b91c1c]">
+            <p className="rounded-lg bg-[#fef2f2] px-3 py-2 text-[12px] font-medium text-[#b91c1c]">
               {error}
-            </div>
+            </p>
           )}
           {!loading && agents.length === 0 && (
-            <div className="lp-bento-shell">
-              <div className="lp-bento-core !p-6 text-center">
-                <p className="text-[14px] font-semibold text-[#0a0a0b]">No characters yet</p>
-                <p className="mt-1 text-[13px] font-medium text-[#52525b]">
-                  Use the form to add the first voice.
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center py-12">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f4f4f5] text-[#a1a1aa]">
+                <Icon icon="solar:users-group-rounded-linear" width={28} />
+              </span>
+              <p className="mt-3 text-[13px] font-semibold text-[#0a0a0b]">No characters yet</p>
+              <p className="mt-0.5 text-[12px] font-medium text-[#71717a]">
+                Use the form to add the first voice.
+              </p>
             </div>
           )}
           {agents.map((agent) => (
-            <article key={agent.id ?? agent.name} className="lp-bento-shell">
-              <div className="lp-bento-core !p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold text-[#0a0a0b]">{agent.name}</p>
-                    <p className="mt-1 line-clamp-2 text-[12px] font-medium text-[#52525b]">
-                      {Array.isArray(agent.bio) ? agent.bio[0] : agent.bio}
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-[#f4f4f5] px-2.5 py-0.5 text-[11px] font-semibold text-[#3f3f46]">
-                    {personalityFrom(agent)}
-                  </span>
-                </div>
-                {(agent.topics ?? []).length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {(agent.topics ?? []).slice(0, 6).map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-full bg-[#f4f4f5] px-2 py-0.5 text-[10px] font-semibold text-[#52525b]"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                )}
+            <div
+              key={agent.id ?? agent.name}
+              className="flex items-center justify-between gap-3 border-b border-black/[0.06] py-2.5 last:border-b-0"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-[13px] font-semibold text-[#0a0a0b]">{agent.name}</p>
+                <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-[#71717a]">
+                  {Array.isArray(agent.bio) ? agent.bio[0] : agent.bio}
+                </p>
               </div>
-            </article>
+              <span className="shrink-0 rounded-full bg-[#f4f4f5] px-2 py-0.5 text-[10px] font-semibold text-[#52525b]">
+                {personalityFrom(agent)}
+              </span>
+            </div>
           ))}
-        </div>
+        </Reveal>
 
-        <div className="lp-bezel h-fit">
-          <div className="lp-bezel-core flex flex-col gap-4 p-4 sm:p-5">
-            <h2 className="text-[15px] font-semibold text-[#0a0a0b]">New character</h2>
+        <Reveal delay={0.05}>
+          <div className="flex flex-col gap-2.5">
+            <p className="text-[13px] font-semibold text-[#0a0a0b]">New character</p>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Name
-              </span>
+              <span className={labelClass}>Name</span>
               <input
                 className={fieldClass}
                 placeholder="Character name"
@@ -225,46 +200,39 @@ export default function AgentsPage() {
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Bio (one line per bullet)
-              </span>
+              <span className={labelClass}>Bio</span>
               <textarea
                 className={fieldClass}
-                rows={4}
-                placeholder={"Who they are\nHow they speak\nWhat they care about"}
+                rows={2}
+                placeholder={"Who they are\nHow they speak"}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
             </label>
 
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Personality type
-              </span>
-              <input
-                className={fieldClass}
-                placeholder="e.g. bold, skeptical, warm"
-                value={personalityType}
-                onChange={(e) => setPersonalityType(e.target.value)}
-              />
-            </label>
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Personality</span>
+                <input
+                  className={fieldClass}
+                  placeholder="bold, skeptical…"
+                  value={personalityType}
+                  onChange={(e) => setPersonalityType(e.target.value)}
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className={labelClass}>Traits</span>
+                <input
+                  className={fieldClass}
+                  placeholder="bold, concise"
+                  value={adjectives}
+                  onChange={(e) => setAdjectives(e.target.value)}
+                />
+              </label>
+            </div>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Traits (comma-separated)
-              </span>
-              <input
-                className={fieldClass}
-                placeholder="bold, concise, skeptical"
-                value={adjectives}
-                onChange={(e) => setAdjectives(e.target.value)}
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Topics (comma-separated)
-              </span>
+              <span className={labelClass}>Topics</span>
               <input
                 className={fieldClass}
                 placeholder="markets, tech, policy"
@@ -274,13 +242,11 @@ export default function AgentsPage() {
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-[#52525b]">
-                Chat style (one per line)
-              </span>
+              <span className={labelClass}>Chat style</span>
               <textarea
                 className={fieldClass}
-                rows={3}
-                placeholder={"Short punchy sentences\nRepeats key phrases"}
+                rows={2}
+                placeholder={"Short punchy sentences"}
                 value={styleChat}
                 onChange={(e) => setStyleChat(e.target.value)}
               />
@@ -290,16 +256,13 @@ export default function AgentsPage() {
               type="button"
               disabled={submitting}
               onClick={() => void onRegister()}
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[14px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
+              className="mt-1 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#0a0a0b] text-[13px] font-semibold text-white hover:bg-[#18181b] disabled:opacity-50"
             >
-              <Icon icon="solar:user-plus-bold" width={18} className="text-white" />
+              <Icon icon="solar:user-plus-bold" width={16} className="text-white" />
               <span className="text-white">{submitting ? "Saving…" : "Save character"}</span>
             </button>
-            <p className="text-[12px] font-medium text-[#71717a]">
-              Personality type is the main voice for every reply. Traits and style refine it.
-            </p>
           </div>
-        </div>
+        </Reveal>
       </div>
     </div>
   );
