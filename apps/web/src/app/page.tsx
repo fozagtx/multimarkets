@@ -15,6 +15,7 @@ import { Icon } from "@iconify/react";
 import LandingFooter from "@/components/landing/landing-footer";
 import FeatureCard from "@/components/landing/feature-card";
 import { Reveal, RevealItem, RevealStagger } from "@/components/landing/reveal";
+import ScrollMascot from "@/components/landing/scroll-mascot";
 import BrandIcon from "@/components/brand-icon";
 import { WalletConnectHeroPrimary } from "@/components/wallet-connect";
 import WalletAuthRedirect from "@/components/wallet-auth-redirect";
@@ -34,6 +35,7 @@ export default function HomePage() {
       <WalletAuthRedirect to="/markets" enabled />
       <div className="lp-mesh" aria-hidden />
       <div className="lp-grain" aria-hidden />
+      <ScrollMascot />
 
       {/* 1. Hero */}
       <section className="pb-8 md:pb-12">
