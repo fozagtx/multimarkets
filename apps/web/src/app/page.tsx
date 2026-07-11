@@ -114,7 +114,7 @@ export default function HomePage() {
                     <h2 className="text-base font-bold tracking-[-0.025em] text-white sm:text-lg">
                       ANSEM VS TRUMP
                     </h2>
-                    <p className="mt-0.5 text-sm font-medium text-white/80">
+                    <p className="mt-0.5 text-sm font-medium !text-white">
                       Who wins the memecoin race?
                     </p>
                     <NextLink
