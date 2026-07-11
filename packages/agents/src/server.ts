@@ -8,6 +8,7 @@ import { existsSync } from "node:fs";
 import { loadCharacterFromDisk, validateCharacter } from "./character/loader.js";
 import { RoomRuntime } from "./room/RoomRuntime.js";
 import { RuntimeStore } from "./persistence/RuntimeStore.js";
+import { OracleMarketBridge } from "./settlement/OracleMarketBridge.js";
 import { CharacterSchema, type Character } from "./types.js";
 import { resolveLlmConfig, LlmConfigError } from "./agents/PersonaAgent.js";
 import { z } from "zod";
@@ -52,6 +53,12 @@ const CreateRoomBody = z.object({
   characterIds: z.array(z.string().min(1)).min(2).max(8),
   topic: z.string().min(1),
   marketQuestion: z.string().min(1),
+  oracleMarket: z.object({
+    baseAsset: z.string().regex(/^[A-Za-z0-9]{2,12}$/),
+    quoteAsset: z.string().regex(/^[A-Za-z0-9]{2,12}$/),
+    threshold: z.string().regex(/^\d+(\.\d{1,8})?$/),
+    deadline: z.number().int().positive(),
+  }),
   maxTurns: z.number().int().positive().optional(),
   turnTimeoutMs: z.number().int().positive().optional(),
   heartbeatIntervalMs: z.number().int().positive().optional(),
@@ -132,10 +139,20 @@ function registerCharacter(character: Character): void {
 export function createApp(): Hono {
   const app = new Hono();
 
-  // Browser UI (Next.js) calls this API cross-origin in dev
+  const allowedOrigins = new Set(
+    (process.env.ALLOWED_ORIGIN ?? "http://localhost:3000")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  );
+
+  // Browser UI (Next.js) calls this API cross-origin in dev and production.
   app.use("*", async (c, next) => {
-    const origin = c.req.header("Origin") ?? "*";
-    c.header("Access-Control-Allow-Origin", origin);
+    const origin = c.req.header("Origin");
+    if (origin && allowedOrigins.has(origin)) {
+      c.header("Access-Control-Allow-Origin", origin);
+      c.header("Vary", "Origin");
+    }
     c.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     c.header("Access-Control-Allow-Credentials", "true");
@@ -246,6 +263,7 @@ export function createApp(): Hono {
         createdAt: session.createdAt,
         currentTurn: session.currentTurn,
         messageCount: session.messages.length,
+        onChain: session.onChain,
         settlement: session.settlement
           ? {
               outcome: session.settlement.outcome,
@@ -326,6 +344,12 @@ export function createApp(): Hono {
           characterIds: ids,
           topic: parsed.data.topic,
           marketQuestion: parsed.data.marketQuestion,
+          oracleMarket: {
+            baseAsset: parsed.data.oracleMarket.baseAsset.toUpperCase(),
+            quoteAsset: parsed.data.oracleMarket.quoteAsset.toUpperCase(),
+            threshold: parsed.data.oracleMarket.threshold,
+            deadline: parsed.data.oracleMarket.deadline,
+          },
           maxTurns: parsed.data.maxTurns,
           turnTimeoutMs: parsed.data.turnTimeoutMs,
           heartbeatIntervalMs: parsed.data.heartbeatIntervalMs,
@@ -371,6 +395,18 @@ export function createApp(): Hono {
       const message = err instanceof Error ? err.message : String(err);
       const status = message.includes("not found") ? 404 : 400;
       return c.json({ error: message }, status);
+    }
+  });
+
+  app.post("/rooms/:id/sync-market", async (c) => {
+    try {
+      await runtime.syncOracleMarkets();
+      const session = runtime.getRoom(c.req.param("id"));
+      if (!session) return c.json({ error: "Room not found" }, 404);
+      return c.json({ room: session });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return c.json({ error: message }, 502);
     }
   });
 
@@ -468,8 +504,17 @@ export async function startServer(options?: {
   for (const character of await runtimeStore.loadCharacters()) {
     registerCharacter(character);
   }
-  runtime = new RoomRuntime(runtimeStore);
+  const oracleMarketBridge = process.env.ORACLE_THRESHOLD_FACTORY_ADDRESS
+    ? new OracleMarketBridge()
+    : undefined;
+  runtime = new RoomRuntime(runtimeStore, undefined, oracleMarketBridge);
   runtime.restoreRooms(await runtimeStore.loadRooms());
+  const marketSyncTimer = setInterval(() => {
+    void runtime.syncOracleMarkets().catch((error) => {
+      console.error("[agents] oracle market sync failed", error);
+    });
+  }, 30_000);
+  marketSyncTimer.unref();
 
   const app = createApp();
   const port = options?.port ?? Number(process.env.PORT ?? 8787);

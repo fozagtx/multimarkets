@@ -53,6 +53,22 @@ export type RoomSession = {
   currentTurn?: number;
   characterIds?: string[];
   error?: string;
+  onChain?: {
+    chainId: number;
+    marketAddress: string;
+    factoryAddress: string;
+    createTxHash: string;
+    baseAsset: string;
+    quoteAsset: string;
+    threshold: string;
+    deadline: number;
+    status: "open" | "closed" | "resolved" | "cancelled" | "failed";
+    closeTxHash?: string;
+    resolveTxHash?: string;
+    resolvedPrice?: string;
+    outcome?: "YES" | "NO";
+    error?: string;
+  };
   raw?: unknown;
 };
 
@@ -270,6 +286,7 @@ export function mapRoom(payload: Record<string, unknown>): RoomSession {
     currentTurn: (room.currentTurn as number | undefined) ?? 0,
     characterIds: pair.characterIds,
     error: (room.error as string | undefined) ?? undefined,
+    onChain: (room.onChain as RoomSession["onChain"]) ?? undefined,
     raw: room,
   };
 }
@@ -299,6 +316,12 @@ export async function createRoom(input: {
   agentBId: string;
   maxTurns?: number;
   autoStart?: boolean;
+  oracleMarket: {
+    baseAsset: string;
+    quoteAsset: string;
+    threshold: string;
+    deadline: number;
+  };
 }): Promise<RoomSession> {
   if (input.agentAId === input.agentBId) {
     throw new Error("Pick two different characters for the match.");
@@ -318,6 +341,7 @@ export async function createRoom(input: {
       marketQuestion: input.marketQuestion,
       maxTurns: input.maxTurns,
       settlementRequired: true,
+      oracleMarket: input.oracleMarket,
     }),
   });
   let room = mapRoom(data);

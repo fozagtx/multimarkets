@@ -1,0 +1,19 @@
+{
+  "network": "hashkeyTestnet",
+  "chainId": 133,
+  "testnetOnly": true,
+  "deployer": "0xC0bf43B339f3016c02791EBEDdd70409F38fF940",
+  "timestamp": "2026-07-11T10:25:57.576Z",
+  "contracts": {
+    "OracleThresholdMarketFactory": "0xf58c3968ab9D75501c20097964334B95c337bA45",
+    "CollateralToken": "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b"
+  },
+  "config": {
+    "oracleSigner": "0xC0bf43B339f3016c02791EBEDdd70409F38fF940",
+    "settlementAuthority": "0xC0bf43B339f3016c02791EBEDdd70409F38fF940",
+    "maxPriceAge": 3600,
+    "feeBps": 0,
+    "minStake": "1000000"
+  },
+  "transactionHash": "0x0a658599afa227cb65b359078f1c37f2fd504d93b729902aa94bb33cb34318bd"
+}

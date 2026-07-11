@@ -97,10 +97,38 @@ export interface RoomConfig {
   characterIds: string[];
   topic: string;
   marketQuestion: string;
+  oracleMarket?: OracleMarketConfig;
   maxTurns?: number;
   turnTimeoutMs?: number;
   heartbeatIntervalMs?: number;
   settlementRequired?: boolean;
+}
+
+export interface OracleMarketConfig {
+  baseAsset: string;
+  quoteAsset: string;
+  /** Decimal price entered by the match creator, e.g. "100000". */
+  threshold: string;
+  /** Unix timestamp in milliseconds. */
+  deadline: number;
+}
+
+export interface OnChainMarketBinding {
+  chainId: number;
+  marketAddress: string;
+  factoryAddress: string;
+  createTxHash: string;
+  baseAsset: string;
+  quoteAsset: string;
+  threshold: string;
+  deadline: number;
+  status: "open" | "closed" | "resolved" | "cancelled" | "failed";
+  closeTxHash?: string;
+  resolveTxHash?: string;
+  resolvedPrice?: string;
+  outcome?: "YES" | "NO";
+  error?: string;
+  updatedAt: number;
 }
 
 export interface RoomSession {
@@ -116,6 +144,7 @@ export interface RoomSession {
   endedAt?: number;
   error?: string;
   settlement?: SettlementPayload;
+  onChain?: OnChainMarketBinding;
 }
 
 export type VoteOutcome = "YES" | "NO" | "UNCLEAR" | "INVALID";

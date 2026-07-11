@@ -20,6 +20,12 @@ function pickDefaults(list: Character[]): { a: string; b: string } {
   return { a: ids[0] ?? "", b: ids[1] ?? "" };
 }
 
+function defaultDeadline(): string {
+  const date = new Date(Date.now() + 15 * 60_000);
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 16);
+}
+
 export default function CreatePage() {
   const router = useRouter();
   const { isConnected } = useAccount();
@@ -29,6 +35,10 @@ export default function CreatePage() {
   const [agentAId, setAgentAId] = React.useState("");
   const [agentBId, setAgentBId] = React.useState("");
   const [maxTurns, setMaxTurns] = React.useState("8");
+  const [baseAsset, setBaseAsset] = React.useState("BTC");
+  const [quoteAsset, setQuoteAsset] = React.useState("USD");
+  const [threshold, setThreshold] = React.useState("100000");
+  const [deadline, setDeadline] = React.useState(defaultDeadline);
   const [autoStart, setAutoStart] = React.useState(true);
   const [loadingAgents, setLoadingAgents] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
@@ -67,8 +77,8 @@ export default function CreatePage() {
 
   const onSubmit = async () => {
     setError(null);
-    if (!topic.trim() || !marketQuestion.trim()) {
-      const msg = "Topic and market question are required.";
+    if (!topic.trim() || !marketQuestion.trim() || !threshold.trim()) {
+      const msg = "Topic, market question, and price target are required.";
       setError(msg);
       toastError("Missing fields", msg);
       return;
@@ -85,6 +95,13 @@ export default function CreatePage() {
       toastError("Need two characters", msg);
       return;
     }
+    const deadlineAt = new Date(deadline).getTime();
+    if (!Number.isFinite(deadlineAt) || deadlineAt < Date.now() + 60_000) {
+      const msg = "Choose a market close time at least a minute from now.";
+      setError(msg);
+      toastError("Choose a later close time", msg);
+      return;
+    }
     try {
       setSubmitting(true);
       toastInfo(
@@ -98,6 +115,12 @@ export default function CreatePage() {
         agentBId,
         maxTurns: Number(maxTurns) || 8,
         autoStart,
+        oracleMarket: {
+          baseAsset: baseAsset.trim().toUpperCase(),
+          quoteAsset: quoteAsset.trim().toUpperCase(),
+          threshold: threshold.trim(),
+          deadline: deadlineAt,
+        },
       });
       toastSuccess(
         autoStart ? "Debate started" : "Arena ready",
@@ -191,6 +214,51 @@ export default function CreatePage() {
             variant="bordered"
             minRows={2}
             maxRows={3}
+            classNames={fieldClass}
+          />
+
+          <div className="grid gap-3 sm:grid-cols-[0.7fr_0.7fr_1fr]">
+            <Input
+              label="Asset"
+              labelPlacement="outside"
+              value={baseAsset}
+              onValueChange={setBaseAsset}
+              variant="bordered"
+              size="sm"
+              classNames={fieldClass}
+            />
+            <Input
+              label="Currency"
+              labelPlacement="outside"
+              value={quoteAsset}
+              onValueChange={setQuoteAsset}
+              variant="bordered"
+              size="sm"
+              classNames={fieldClass}
+            />
+            <Input
+              type="number"
+              label="Price target"
+              labelPlacement="outside"
+              min="0"
+              step="any"
+              value={threshold}
+              onValueChange={setThreshold}
+              variant="bordered"
+              size="sm"
+              classNames={fieldClass}
+            />
+          </div>
+
+          <Input
+            type="datetime-local"
+            label="Market closes"
+            labelPlacement="outside"
+            description="The final price decides YES or NO."
+            value={deadline}
+            onValueChange={setDeadline}
+            variant="bordered"
+            size="sm"
             classNames={fieldClass}
           />
 

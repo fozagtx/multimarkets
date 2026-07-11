@@ -78,44 +78,48 @@ export default function HomePage() {
               </Reveal>
 
               <Reveal delay={0.21} className="mt-7 w-full max-w-lg">
-                <div className="relative isolate flex min-h-60 items-end overflow-hidden rounded-[1.4rem] border border-white/30 px-5 py-5 text-left shadow-[0_18px_45px_-22px_rgba(9,18,38,0.65)] sm:px-6">
-                  <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-                    <div className="absolute inset-y-0 left-0 w-[45%]">
+                <div className="rounded-[1.4rem] border border-white/40 bg-white/35 p-3 shadow-[0_18px_45px_-22px_rgba(9,18,38,0.65)] backdrop-blur-sm sm:p-4">
+                  <div className="grid grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_3.25rem_minmax(0,1fr)] sm:gap-3">
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
                       <Image
                         src="/trump-official-portrait.png"
-                        alt=""
+                        alt="Donald Trump"
                         fill
                         priority
-                        sizes="(max-width: 640px) 45vw, 230px"
+                        sizes="(max-width: 640px) 42vw, 230px"
                         className="object-cover object-center"
                       />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#07101f]/90 to-transparent px-3 pb-3 pt-10 text-left">
+                        <p className="text-xs font-bold tracking-[0.14em] text-white">TRUMP</p>
+                      </div>
                     </div>
-                    <div className="absolute inset-y-0 right-0 w-[55%]">
+                    <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-[#07101f] text-xs font-black tracking-tight text-white shadow-lg sm:h-12 sm:w-12 sm:text-sm">
+                      VS
+                    </span>
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/30 bg-[#101724] shadow-lg">
                       <Image
                         src="/ansem-black-bull.webp"
-                        alt=""
+                        alt="Ansem Black Bull avatar"
                         fill
                         priority
-                        sizes="(max-width: 640px) 55vw, 282px"
-                        className="object-cover object-right"
+                        sizes="(max-width: 640px) 42vw, 230px"
+                        className="object-cover object-center"
                       />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#07101f]/90 to-transparent px-3 pb-3 pt-10 text-left">
+                        <p className="text-xs font-bold tracking-[0.14em] text-white">ANSEM</p>
+                      </div>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#07101f]/95 via-[#07101f]/35 to-transparent" />
                   </div>
-
-                  <div className="max-w-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
-                      Character matchups
-                    </p>
-                    <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-white sm:text-2xl">
+                  <div className="mt-3 rounded-2xl bg-[#07101f] px-4 py-3 text-left">
+                    <h2 className="text-base font-bold tracking-[-0.025em] text-white sm:text-lg">
                       ANSEM VS TRUMP
                     </h2>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-white">
+                    <p className="mt-0.5 text-sm font-medium text-white/80">
                       Who wins the memecoin race?
                     </p>
                     <NextLink
                       href="/create"
-                      className="mt-4 inline-flex min-h-10 items-center rounded-full bg-white px-4 text-sm font-semibold text-[#0a0a0b] transition-[transform,background-color] duration-150 ease-out hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101f] active:scale-[0.98]"
+                      className="mt-3 inline-flex min-h-9 items-center rounded-full bg-white px-3.5 text-sm font-semibold text-[#0a0a0b] transition-[transform,background-color] duration-150 ease-out hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101f] active:scale-[0.98]"
                     >
                       Build this match
                     </NextLink>

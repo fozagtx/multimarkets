@@ -386,7 +386,14 @@ export default function RoomDetailPage() {
         </section>
 
         <aside className="flex flex-col gap-3 lg:col-span-3">
-          <MarketTradePanel question={room.marketQuestion} />
+          <MarketTradePanel
+            question={room.marketQuestion}
+            marketAddress={
+              room.onChain?.marketAddress?.startsWith("0x")
+                ? (room.onChain.marketAddress as `0x${string}`)
+                : ""
+            }
+          />
           <div className="rounded-2xl border border-black/[0.06] bg-white p-4">
             <p className="mb-2 text-[13px] font-semibold text-[#0a0a0b]">How this works</p>
             <ol className="list-decimal space-y-1 pl-4 text-[12px] font-medium leading-relaxed text-[#3f3f46]">

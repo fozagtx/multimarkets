@@ -25,6 +25,8 @@ export const CONTRACTS = {
   masterAgentGuard: "0x32A69a587488EB9664A7F7E6f6a6a2B33657446A",
   coinbaseOracleAdapter: "0x7d6803Ab43E41963f871cBffFf3F0995d36E0048",
   chatRoomFactory: "0xdE7B54ef04Bf5939505A933EBE59390504d73f75",
+  /** Oracle-settled market factory; per-room market addresses come from the agents service. */
+  oracleThresholdMarketFactory: "0xf58c3968ab9D75501c20097964334B95c337bA45",
   /** TestnetUSDT (tUSDT) — mintable collateral */
   collateralToken: "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",
   testnetUsdt: "0x2133358Da6CeD8dD5E318A2342e5e0C237A0a09b",

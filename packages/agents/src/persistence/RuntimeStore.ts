@@ -20,6 +20,7 @@ type RoomRow = {
   ended_at: string | number | null;
   error: string | null;
   settlement: unknown;
+  on_chain: unknown;
 };
 
 type CharacterRow = {
@@ -61,6 +62,9 @@ function toSession(row: RoomRow, messages: AgentMessage[]): RoomSession {
     error: row.error ?? undefined,
     settlement: row.settlement
       ? parseJson<SettlementPayload>(row.settlement)
+      : undefined,
+    onChain: row.on_chain
+      ? parseJson<RoomSession["onChain"]>(row.on_chain)
       : undefined,
   };
 }
@@ -120,8 +124,12 @@ export class RuntimeStore {
         ended_at BIGINT,
         error TEXT,
         settlement JSONB,
+        on_chain JSONB,
         updated_at BIGINT NOT NULL
       )
+    `;
+    await this.sql`
+      ALTER TABLE runtime_rooms ADD COLUMN IF NOT EXISTS on_chain JSONB
     `;
     await this.sql`
       CREATE TABLE IF NOT EXISTS runtime_messages (
@@ -184,7 +192,7 @@ export class RuntimeStore {
     await this.sql`
       INSERT INTO runtime_rooms (
         id, status, config, agents, current_turn, current_speaker_id,
-        created_at, started_at, ended_at, error, settlement, updated_at
+        created_at, started_at, ended_at, error, settlement, on_chain, updated_at
       )
       VALUES (
         ${session.id},
@@ -198,6 +206,7 @@ export class RuntimeStore {
         ${session.endedAt ?? null},
         ${session.error ?? null},
         ${session.settlement ? JSON.stringify(session.settlement) : null}::jsonb,
+        ${session.onChain ? JSON.stringify(session.onChain) : null}::jsonb,
         ${Date.now()}
       )
       ON CONFLICT (id) DO UPDATE SET
@@ -210,6 +219,7 @@ export class RuntimeStore {
         ended_at = EXCLUDED.ended_at,
         error = EXCLUDED.error,
         settlement = EXCLUDED.settlement,
+        on_chain = EXCLUDED.on_chain,
         updated_at = EXCLUDED.updated_at
     `;
   }
@@ -237,7 +247,7 @@ export class RuntimeStore {
     const rooms = await this.sql<RoomRow[]>`
       SELECT
         id, status, config, agents, current_turn, current_speaker_id,
-        created_at, started_at, ended_at, error, settlement
+            created_at, started_at, ended_at, error, settlement, on_chain
       FROM runtime_rooms
       ORDER BY created_at DESC
     `;

@@ -8,16 +8,23 @@ import type { RuntimeStore } from "../persistence/RuntimeStore.js";
 import type {
   AgentMessage,
   Character,
+  OnChainMarketBinding,
   RoomConfig,
   RoomSession,
   RoomStatus,
 } from "../types.js";
+import type { OracleMarketBridge } from "../settlement/OracleMarketBridge.js";
 
 export interface CreateRoomOptions {
   config: RoomConfig;
   characters: Character[];
   masterCharacter: Character;
   eventBus?: EventBus;
+}
+
+interface MarketBridge {
+  provision(session: RoomSession): Promise<OnChainMarketBinding>;
+  sync(binding: OnChainMarketBinding): Promise<OnChainMarketBinding>;
 }
 
 /**
@@ -28,10 +35,16 @@ export class RoomRuntime {
   private readonly rooms = new Map<string, RoomHandle>();
   private readonly recoveredRooms = new Map<string, RoomSession>();
   private readonly store?: RuntimeStore;
+  private readonly marketBridge?: MarketBridge;
 
-  constructor(store?: RuntimeStore, eventBus?: EventBus) {
+  constructor(
+    store?: RuntimeStore,
+    eventBus?: EventBus,
+    marketBridge?: OracleMarketBridge,
+  ) {
     this.store = store;
     this.eventBus = eventBus ?? new EventBus();
+    this.marketBridge = marketBridge;
   }
 
   restoreRooms(sessions: RoomSession[]): void {
@@ -98,6 +111,12 @@ export class RoomRuntime {
       runPromise: null,
       abort: false,
     };
+    if (session.config.oracleMarket) {
+      if (!this.marketBridge) {
+        throw new Error("Oracle market service is not configured.");
+      }
+      session.onChain = await this.marketBridge.provision(session);
+    }
     this.rooms.set(id, handle);
     await this.store?.createRoom(session);
     return cloneSession(session);
@@ -114,6 +133,32 @@ export class RoomRuntime {
     const live = [...this.rooms.values()].map((h) => cloneSession(h.session));
     const recovered = [...this.recoveredRooms.values()].map(cloneSession);
     return [...live, ...recovered].sort((a, b) => b.createdAt - a.createdAt);
+  }
+
+  async syncOracleMarkets(): Promise<void> {
+    if (!this.marketBridge) return;
+    const sessions = [
+      ...[...this.rooms.values()].map((handle) => handle.session),
+      ...this.recoveredRooms.values(),
+    ];
+    for (const session of sessions) {
+      if (!session.onChain) continue;
+      const before = session.onChain;
+      if (
+        before.status === "resolved" ||
+        before.status === "cancelled" ||
+        Date.now() < before.deadline
+      ) {
+        continue;
+      }
+      session.onChain = await this.marketBridge.sync(before);
+      await this.store?.saveRoom(session);
+      if (session.onChain.status === "failed") {
+        this.eventBus.emitEvent("error", session.id, { message: session.onChain.error });
+      } else if (session.onChain.status === "resolved") {
+        this.eventBus.emitEvent("settlement_final", session.id, session.onChain);
+      }
+    }
   }
 
   /** Start the debate loop asynchronously. Returns immediately. */
@@ -292,6 +337,7 @@ export class RoomRuntime {
 
     if (
       session.config.settlementRequired !== false &&
+      !session.config.oracleMarket &&
       session.messages.length > 0 &&
       status !== "failed"
     ) {
@@ -326,6 +372,7 @@ export class RoomRuntime {
     session.endedAt = Date.now();
     session.currentSpeakerId = null;
     await this.store?.saveRoom(session);
+    await this.syncOracleMarkets();
     master.dispose();
   }
 }
@@ -353,5 +400,6 @@ function cloneSession(session: RoomSession): RoomSession {
             : undefined,
         }
       : undefined,
+    onChain: session.onChain ? { ...session.onChain } : undefined,
   };
 }
